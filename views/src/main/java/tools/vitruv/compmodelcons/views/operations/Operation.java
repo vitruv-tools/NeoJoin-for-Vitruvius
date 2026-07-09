@@ -13,9 +13,9 @@ import java.util.Optional;
  * A part of a bidirectional transformation, itself a bidirectional transformation as well.
  */
 public interface Operation {
-    List<ObjectBinding> get(GetContext context);
+    List<ObjectBinding> GET(GetContext context);
 
-    ObjectBinding put(EChange<EObject> change, ObjectBinding target, PutContext context);
+    ObjectBinding PUT(EChange<EObject> change, ObjectBinding target, PutContext context);
 
-    Optional<EChange<EObject>> getChange(EChange<EObject> change);
+    Optional<EChange<EObject>> GET_CHANGE(EChange<EObject> change);
 }
