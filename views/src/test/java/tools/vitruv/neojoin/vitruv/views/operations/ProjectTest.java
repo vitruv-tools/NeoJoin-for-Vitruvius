@@ -11,14 +11,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.emf.ecore.EAttribute;
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.junit.jupiter.api.Test;
+
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.TypeInferringAtomicEChangeFactory;
 import tools.vitruv.neojoin.vitruv.views.DynamicModels;
@@ -27,242 +26,214 @@ import tools.vitruv.neojoin.vitruv.views.bindings.ObjectBinding;
 import tools.vitruv.neojoin.vitruv.views.bindings.OriginBinding;
 import tools.vitruv.neojoin.vitruv.views.bindings.ValueBinding;
 
+import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
+
 public class ProjectTest extends AbstractOperationTest {
-  @Test
-  public void testGetShouldCreateCorrespondence() {
-    // Origin Setup
-    EObject store = models.getRoot(Model.RESTAURANT);
+    @Test
+    public void testGetShouldCreateCorrespondence() {
+        // Origin Setup
+        EObject store = models.getRoot(Model.RESTAURANT);
 
-    // ViewType Setup
-    EPackage viewType = DynamicModels.createEPackage();
-    EClass emptyClass = DynamicModels.createEClass(viewType);
+        // ViewType Setup
+        EPackage viewType = DynamicModels.createEPackage();
+        EClass emptyClass = DynamicModels.createEClass(viewType);
 
-    // Operation Setup
-    OriginOperation originOperation = mock(OriginOperation.class);
-    Project operation =
-        new Project(emptyClass, originOperation, List.of(), Project.OnPut.NO_OP);
+        // Operation Setup
+        OriginOperation originOperation = mock(OriginOperation.class);
+        Project operation =
+                new Project(emptyClass, originOperation, List.of(), Project.OnPut.NO_OP);
 
-    // Action
-    when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
-    List<ObjectBinding> result = operation.beginGetByCreatingViewObjects(context);
-    for (ObjectBinding binding : result) {
-      operation.completeGetByCallingGetOnFeatures(binding, context);
+        // Action
+        when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
+        List<ObjectBinding> result = operation.beginGetByCreatingViewObjects(context);
+        for (ObjectBinding binding : result) {
+            operation.completeGetByCallingGetOnFeatures(binding, context);
+        }
+
+        // Assertions
+        verify(originOperation, times(1)).doGet(context);
+        assertEquals(1, result.size());
+        assertEquals(result.getFirst().viewObject().eClass(), emptyClass);
+        assertTrue(correspondences.correspond(List.of(store), result.getFirst().viewObject()));
+        assertFalse(models.getViewModel().getContents().contains(result.getFirst().viewObject()));
     }
 
-    // Assertions
-    verify(originOperation, times(1)).doGet(context);
-    assertEquals(1, result.size());
-    assertEquals(result
-                     .getFirst()
-                     .viewObject()
-                     .eClass(), emptyClass);
-    assertTrue(correspondences.correspond(List.of(store), result
-        .getFirst()
-        .viewObject()));
-    assertFalse(models
-                    .getViewModel()
-                    .getContents()
-                    .contains(result
-                                  .getFirst()
-                                  .viewObject()));
-  }
+    @Test
+    public void testGetShouldCallGetOfFeaturesWithCreatedViewObject() {
+        // Origin Setup
+        EObject store = models.getRoot(Model.RESTAURANT);
 
-  @Test
-  public void testGetShouldCallGetOfFeaturesWithCreatedViewObject() {
-    // Origin Setup
-    EObject store = models.getRoot(Model.RESTAURANT);
+        // ViewType Setup
+        EPackage viewType = DynamicModels.createEPackage();
+        EClass simpleClass = DynamicModels.createEClass(viewType);
+        EAttribute number =
+                DynamicModels.createEAttribute(
+                        simpleClass, "number", EcorePackage.eINSTANCE.getEInt());
 
-    // ViewType Setup
-    EPackage viewType = DynamicModels.createEPackage();
-    EClass simpleClass = DynamicModels.createEClass(viewType);
-    EAttribute number =
-        DynamicModels.createEAttribute(simpleClass, "number", EcorePackage.eINSTANCE.getEInt());
+        // Operation Setup
+        OriginOperation originOperation = mock(OriginOperation.class);
+        FeatureProject featureProject = mock(FeatureProject.class);
+        when(featureProject.getCreatedFeature()).thenReturn(number);
+        Project operation =
+                new Project(
+                        simpleClass, originOperation, List.of(featureProject), Project.OnPut.NO_OP);
 
-    // Operation Setup
-    OriginOperation originOperation = mock(OriginOperation.class);
-    FeatureProject featureProject = mock(FeatureProject.class);
-    when(featureProject.getCreatedFeature()).thenReturn(number);
-    Project operation = new Project(simpleClass,
-                                    originOperation,
-                                    List.of(featureProject),
-                                    Project.OnPut.NO_OP
-    );
+        // Action
+        when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
+        when(featureProject.doGet(any(), any()))
+                .then(
+                        invocation -> {
+                            ObjectBinding binding = invocation.getArgument(0);
+                            binding.viewObject().eSet(number, 42);
+                            return createBinding(
+                                    binding.originObjects().getFirst(),
+                                    binding.viewObject(),
+                                    ValueBinding.of(42));
+                        });
+        List<ObjectBinding> result = operation.beginGetByCreatingViewObjects(context);
+        for (ObjectBinding binding : result) {
+            operation.completeGetByCallingGetOnFeatures(binding, context);
+        }
 
-    // Action
-    when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
-    when(featureProject.doGet(any(), any())).then(invocation -> {
-      ObjectBinding binding = invocation.getArgument(0);
-      binding
-          .viewObject()
-          .eSet(number, 42);
-      return createBinding(binding
-                               .originObjects()
-                               .getFirst(), binding.viewObject(), ValueBinding.of(42));
-    });
-    List<ObjectBinding> result = operation.beginGetByCreatingViewObjects(context);
-    for (ObjectBinding binding : result) {
-      operation.completeGetByCallingGetOnFeatures(binding, context);
+        // Assertions
+        assertEquals(1, result.size());
+        verify(featureProject, times(1)).doGet(result.getFirst(), context);
+        assertEquals(42, result.getFirst().viewObject().eGet(number));
     }
 
-    // Assertions
-    assertEquals(1, result.size());
-    verify(featureProject, times(1)).doGet(result.getFirst(), context);
-    assertEquals(42, result
-        .getFirst()
-        .viewObject()
-        .eGet(number));
-  }
+    @Test
+    public void testPutWithNoOriginObjectShouldCallTheInnerOperation() {
+        // Origin Setup
+        EObject store = models.getRoot(Model.RESTAURANT);
+        EObject otherStore = DynamicModels.createEObject(store.eClass());
 
-  @Test
-  public void testPutWithNoOriginObjectShouldCallTheInnerOperation() {
-    // Origin Setup
-    EObject store = models.getRoot(Model.RESTAURANT);
-    EObject otherStore = DynamicModels.createEObject(store.eClass());
+        // ViewType Setup
+        EPackage viewType = DynamicModels.createEPackage();
+        EClass emptyClass = DynamicModels.createEClass(viewType);
 
-    // ViewType Setup
-    EPackage viewType = DynamicModels.createEPackage();
-    EClass emptyClass = DynamicModels.createEClass(viewType);
+        // Operation Setup
+        OriginOperation originOperation = mock(OriginOperation.class);
+        Project operation =
+                new Project(emptyClass, originOperation, List.of(), Project.OnPut.NO_OP);
 
-    // Operation Setup
-    OriginOperation originOperation = mock(OriginOperation.class);
-    Project operation =
-        new Project(emptyClass, originOperation, List.of(), Project.OnPut.NO_OP);
+        // Pre-Action Get
+        when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
+        for (ObjectBinding binding : operation.beginGetByCreatingViewObjects(context)) {
+            operation.completeGetByCallingGetOnFeatures(binding, context);
+        }
 
-    // Pre-Action Get
-    when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
-    for (ObjectBinding binding : operation.beginGetByCreatingViewObjects(context)) {
-      operation.completeGetByCallingGetOnFeatures(binding, context);
+        // Pre-Action Change
+        EObject created = DynamicModels.createEObject(emptyClass);
+        EChange<EObject> change =
+                TypeInferringAtomicEChangeFactory.getInstance().createCreateEObjectChange(created);
+
+        // Action
+        when(originOperation.doPut(any(), any(), any())).thenReturn(OriginBinding.of(otherStore));
+        ObjectBinding result =
+                operation.doPut(change, ObjectBinding.ofViewObject(created), context);
+
+        // Assertions
+        verify(originOperation, times(1)).doPut(eq(change), any(), eq(context));
+        assertEquals(created, result.viewObject());
+        assertEquals(otherStore, result.originObjects().getFirst());
     }
 
-    // Pre-Action Change
-    EObject created = DynamicModels.createEObject(emptyClass);
-    EChange<EObject> change = TypeInferringAtomicEChangeFactory
-        .getInstance()
-        .createCreateEObjectChange(created);
+    @Test
+    public void testPutWithOriginObjectShouldCallTheInnerOperation() {
+        // Origin Setup
+        EObject store = models.getRoot(Model.RESTAURANT);
 
-    // Action
-    when(originOperation.doPut(any(), any(), any())).thenReturn(OriginBinding.of(otherStore));
-    ObjectBinding result = operation.doPut(change, ObjectBinding.ofViewObject(created), context);
+        // ViewType Setup
+        EPackage viewType = DynamicModels.createEPackage();
+        EClass emptyClass = DynamicModels.createEClass(viewType);
 
-    // Assertions
-    verify(originOperation, times(1)).doPut(eq(change), any(), eq(context));
-    assertEquals(created, result.viewObject());
-    assertEquals(otherStore, result
-        .originObjects()
-        .getFirst());
-  }
+        // Operation Setup
+        OriginOperation originOperation = mock(OriginOperation.class);
+        Project operation =
+                new Project(emptyClass, originOperation, List.of(), Project.OnPut.NO_OP);
 
-  @Test
-  public void testPutWithOriginObjectShouldCallTheInnerOperation() {
-    // Origin Setup
-    EObject store = models.getRoot(Model.RESTAURANT);
+        // Pre-Action Get
+        when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
+        List<ObjectBinding> results = operation.beginGetByCreatingViewObjects(context);
+        for (ObjectBinding binding : results) {
+            operation.completeGetByCallingGetOnFeatures(binding, context);
+        }
 
-    // ViewType Setup
-    EPackage viewType = DynamicModels.createEPackage();
-    EClass emptyClass = DynamicModels.createEClass(viewType);
+        // Pre-Action Change
+        EChange<EObject> change =
+                TypeInferringAtomicEChangeFactory.getInstance()
+                        .createDeleteEObjectChange(results.getFirst().viewObject());
 
-    // Operation Setup
-    OriginOperation originOperation = mock(OriginOperation.class);
-    Project operation =
-        new Project(emptyClass, originOperation, List.of(), Project.OnPut.NO_OP);
+        // Action
+        when(originOperation.doPut(any(), any(), any()))
+                .thenReturn(OriginBinding.of(results.getFirst().originObjects().getFirst()));
+        ObjectBinding result = operation.doPut(change, results.getFirst(), context);
 
-    // Pre-Action Get
-    when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
-    List<ObjectBinding> results = operation.beginGetByCreatingViewObjects(context);
-    for (ObjectBinding binding : results) {
-      operation.completeGetByCallingGetOnFeatures(binding, context);
+        // Assertions
+        verify(originOperation, times(1)).doPut(eq(change), any(), eq(context));
+        assertEquals(results.getFirst().viewObject(), result.viewObject());
+        assertEquals(results.getFirst().originObjects(), result.originObjects());
     }
 
-    // Pre-Action Change
-    EChange<EObject> change = TypeInferringAtomicEChangeFactory
-        .getInstance()
-        .createDeleteEObjectChange(results
-                                       .getFirst()
-                                       .viewObject());
+    @Test
+    public void testPutOfFeatureChangeShouldCallTheFeatureOperation() {
+        // Origin Setup
+        EObject store = models.getRoot(Model.RESTAURANT);
 
-    // Action
-    when(originOperation.doPut(any(), any(), any())).thenReturn(OriginBinding.of(results
-                                                                                     .getFirst()
-                                                                                     .originObjects()
-                                                                                     .getFirst()));
-    ObjectBinding result = operation.doPut(change, results.getFirst(), context);
+        // ViewType Setup
+        EPackage viewType = DynamicModels.createEPackage();
+        EClass simpleClass = DynamicModels.createEClass(viewType);
+        EAttribute number =
+                DynamicModels.createEAttribute(
+                        simpleClass, "number", EcorePackage.eINSTANCE.getEInt());
 
-    // Assertions
-    verify(originOperation, times(1)).doPut(eq(change), any(), eq(context));
-    assertEquals(results
-                     .getFirst()
-                     .viewObject(), result.viewObject());
-    assertEquals(results
-                     .getFirst()
-                     .originObjects(), result.originObjects());
-  }
+        // Operation Setup
+        OriginOperation originOperation = mock(OriginOperation.class);
+        FeatureProject featureProject = mock(FeatureProject.class);
+        when(featureProject.getCreatedFeature()).thenReturn(number);
+        Project operation =
+                new Project(
+                        simpleClass, originOperation, List.of(featureProject), Project.OnPut.NO_OP);
 
-  @Test
-  public void testPutOfFeatureChangeShouldCallTheFeatureOperation() {
-    // Origin Setup
-    EObject store = models.getRoot(Model.RESTAURANT);
+        // Pre-Action Get
+        when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
+        AtomicReference<FeatureBinding> createdFeatureBinding = new AtomicReference<>();
+        when(featureProject.doGet(any(), any()))
+                .then(
+                        invocation -> {
+                            ObjectBinding binding = invocation.getArgument(0);
+                            binding.viewObject().eSet(number, 67);
+                            createdFeatureBinding.set(
+                                    createBinding(
+                                            binding.originObjects().getFirst(),
+                                            binding.viewObject(),
+                                            ValueBinding.of(67)));
+                            return createdFeatureBinding.get();
+                        });
+        List<ObjectBinding> results = operation.beginGetByCreatingViewObjects(context);
+        for (ObjectBinding binding : results) {
+            operation.completeGetByCallingGetOnFeatures(binding, context);
+        }
 
-    // ViewType Setup
-    EPackage viewType = DynamicModels.createEPackage();
-    EClass simpleClass = DynamicModels.createEClass(viewType);
-    EAttribute number =
-        DynamicModels.createEAttribute(simpleClass, "number", EcorePackage.eINSTANCE.getEInt());
+        // Pre-Action Change
+        results.getFirst().viewObject().eUnset(number);
+        EChange<EObject> change =
+                TypeInferringAtomicEChangeFactory.getInstance()
+                        .createUnsetFeatureChange(results.getFirst().viewObject(), number);
 
-    // Operation Setup
-    OriginOperation originOperation = mock(OriginOperation.class);
-    FeatureProject featureProject = mock(FeatureProject.class);
-    when(featureProject.getCreatedFeature()).thenReturn(number);
-    Project operation = new Project(simpleClass,
-                                    originOperation,
-                                    List.of(featureProject),
-                                    Project.OnPut.NO_OP
-    );
+        // Action
+        when(featureProject.doPut(any(), any(), any(), any()))
+                .thenReturn(
+                        createBinding(
+                                results.getFirst().originObjects().getFirst(),
+                                results.getFirst().viewObject(),
+                                ValueBinding.of(0)));
+        operation.doPut(change, results.getFirst(), context);
 
-    // Pre-Action Get
-    when(originOperation.doGet(context)).thenReturn(List.of(OriginBinding.of(store)));
-    AtomicReference<FeatureBinding> createdFeatureBinding = new AtomicReference<>();
-    when(featureProject.doGet(any(), any())).then(invocation -> {
-      ObjectBinding binding = invocation.getArgument(0);
-      binding
-          .viewObject()
-          .eSet(number, 67);
-      createdFeatureBinding.set(createBinding(binding
-                                                  .originObjects()
-                                                  .getFirst(), binding.viewObject(),
-                                              ValueBinding.of(67)));
-      return createdFeatureBinding.get();
-    });
-    List<ObjectBinding> results = operation.beginGetByCreatingViewObjects(context);
-    for (ObjectBinding binding : results) {
-      operation.completeGetByCallingGetOnFeatures(binding, context);
+        // Assertions
+        verify(originOperation, never()).doPut(any(), any(), any());
+        verify(featureProject, times(1))
+                .doPut(change, createdFeatureBinding.get(), results.getFirst(), context);
     }
-
-    // Pre-Action Change
-    results
-        .getFirst()
-        .viewObject()
-        .eUnset(number);
-    EChange<EObject> change = TypeInferringAtomicEChangeFactory
-        .getInstance()
-        .createUnsetFeatureChange(results
-                                      .getFirst()
-                                      .viewObject(), number);
-
-    // Action
-    when(featureProject.doPut(any(), any(), any(), any())).thenReturn(createBinding(results
-                                                                                        .getFirst()
-                                                                                        .originObjects()
-                                                                                        .getFirst(),
-                                                                                    results
-                                                                                        .getFirst()
-                                                                                        .viewObject(),
-                                                                                    ValueBinding.of(
-                                                                                        0)));
-    operation.doPut(change, results.getFirst(), context);
-
-    // Assertions
-    verify(originOperation, never()).doPut(any(), any(), any());
-    verify(featureProject, times(1)).doPut(change, createdFeatureBinding.get(), results.getFirst(),
-                                           context);
-  }
 }

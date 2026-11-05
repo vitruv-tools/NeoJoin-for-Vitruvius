@@ -1,12 +1,5 @@
 package tools.vitruv.neojoin.vitruv.views.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Consumer;
-import java.util.function.Function;
 import org.eclipse.emf.common.notify.Notification;
 import org.eclipse.emf.common.notify.Notifier;
 import org.eclipse.emf.common.notify.impl.AdapterImpl;
@@ -15,6 +8,7 @@ import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
+
 import tools.vitruv.change.atomic.hid.HierarchicalId;
 import tools.vitruv.change.composite.description.VitruviusChange;
 import tools.vitruv.framework.views.ChangeableViewSource;
@@ -33,376 +27,383 @@ import tools.vitruv.neojoin.vitruv.views.internal.impl.InternalViewImpl;
 import tools.vitruv.neojoin.vitruv.views.internal.impl.ViewWrappingOriginResourceAccessImpl;
 import tools.vitruv.neojoin.vitruv.views.operations.Root;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Consumer;
+import java.util.function.Function;
+
 /**
- * A Vitruvius {@link ViewType} based on operations.
- * Compare {@link IdentityMappingViewType}, which has a similar structure.
+ * A Vitruvius {@link ViewType} based on operations. Compare {@link IdentityMappingViewType}, which
+ * has a similar structure.
  */
 public abstract class OperationBasedViewType extends AbstractViewType<AllSelector, HierarchicalId> {
-  private final List<EPackage> originMetamodels;
-  private final ViewTypeProvider viewTypeProvider;
+    private final List<EPackage> originMetamodels;
+    private final ViewTypeProvider viewTypeProvider;
 
-  private Root structure;
+    private Root structure;
 
-  /**
-   * Creates a new view type.
-   *
-   * @param name              the name of the view type
-   * @param originMetamodels  the metamodels of the origin models
-   * @param viewTypeMetamodel the metamodel of the view type
-   */
-  public OperationBasedViewType(String name, List<EPackage> originMetamodels,
-                                EPackage viewTypeMetamodel, ViewTypeProvider viewTypeProvider) {
-    super(name, viewTypeMetamodel);
+    /**
+     * Creates a new view type.
+     *
+     * @param name the name of the view type
+     * @param originMetamodels the metamodels of the origin models
+     * @param viewTypeMetamodel the metamodel of the view type
+     */
+    public OperationBasedViewType(
+            String name,
+            List<EPackage> originMetamodels,
+            EPackage viewTypeMetamodel,
+            ViewTypeProvider viewTypeProvider) {
+        super(name, viewTypeMetamodel);
 
-    this.originMetamodels = List.copyOf(originMetamodels);
-    this.viewTypeProvider = viewTypeProvider;
-  }
-
-  public List<EPackage> getOriginMetamodels() {
-    return originMetamodels;
-  }
-
-  /**
-   * Creates an URI that can be used for the in-memory resource of the view if no other URI is
-   * available.
-   *
-   * @return the URI
-   */
-  public URI createPlaceholderViewUri() {
-    return URI.createURI(String.format("view:/%s", getViewResourceName()));
-  }
-
-  /**
-   * Create an URI for a resource using a given factory.
-   *
-   * @param uriFactory the factory to use
-   * @return the URI
-   */
-  public URI createUri(Function<String, URI> uriFactory) {
-    return uriFactory.apply(getViewResourceName());
-  }
-
-  private String getViewResourceName() {
-    return String.format("default.%s", getMetamodel().getNsPrefix());
-  }
-
-  /**
-   * Override this method to create the operation-based structure of the view.
-   * This method is called only once.
-   *
-   * @return the structure of the view
-   */
-  protected abstract Root createStructure();
-
-  /**
-   * Get the operation-based structure of the view.
-   *
-   * @return the structure of the view
-   */
-  protected Root getStructure() {
-    if (structure == null) {
-      structure = createStructure();
+        this.originMetamodels = List.copyOf(originMetamodels);
+        this.viewTypeProvider = viewTypeProvider;
     }
-    return structure;
-  }
 
-  @Override
-  public AllSelector createSelector(ChangeableViewSource source) {
-    return new AllSelector(this, source);
-  }
+    public List<EPackage> getOriginMetamodels() {
+        return originMetamodels;
+    }
 
-  @Override
-  public ModifiableView createView(AllSelector selector) {
-    return new OperationBasedView(selector);
-  }
+    /**
+     * Creates an URI that can be used for the in-memory resource of the view if no other URI is
+     * available.
+     *
+     * @return the URI
+     */
+    public URI createPlaceholderViewUri() {
+        return URI.createURI(String.format("view:/%s", getViewResourceName()));
+    }
 
-  private View createOriginView(ChangeableViewSource viewSource) {
-    Set<EPackage> requiredOriginMetamodels = new HashSet<>(getOriginMetamodels());
-    List<View> views = new ArrayList<>();
+    /**
+     * Create an URI for a resource using a given factory.
+     *
+     * @param uriFactory the factory to use
+     * @return the URI
+     */
+    public URI createUri(Function<String, URI> uriFactory) {
+        return uriFactory.apply(getViewResourceName());
+    }
 
-    if (viewTypeProvider != null) {
-      for (ViewType<?> viewType : viewTypeProvider.getViewTypes()) {
-        if (viewType.getMetamodel() != null && requiredOriginMetamodels.remove(
-            viewType.getMetamodel())) {
-          views.add(viewType
-                        .createSelector(viewSource)
-                        .createView());
+    private String getViewResourceName() {
+        return String.format("default.%s", getMetamodel().getNsPrefix());
+    }
+
+    /**
+     * Override this method to create the operation-based structure of the view. This method is
+     * called only once.
+     *
+     * @return the structure of the view
+     */
+    protected abstract Root createStructure();
+
+    /**
+     * Get the operation-based structure of the view.
+     *
+     * @return the structure of the view
+     */
+    protected Root getStructure() {
+        if (structure == null) {
+            structure = createStructure();
         }
-      }
-    }
-
-    if (!requiredOriginMetamodels.isEmpty()) {
-      views.add(createDirectOriginModelView(requiredOriginMetamodels, viewSource));
-    }
-
-    if (views.size() == 1) {
-      return views.getFirst();
-    }
-
-    return new CompositeView(views);
-  }
-
-  private View createDirectOriginModelView(Set<EPackage> requiredOriginMetamodels,
-                                           ChangeableViewSource viewSource) {
-    var viewType = new IdentityMappingViewType(String.format("%s_InternalIdentity", getName()));
-    var selector = viewType.createSelector(viewSource);
-    selector
-        .getSelectableElements()
-        .stream()
-        .filter(eObject -> requiredOriginMetamodels.contains(eObject
-                                                                 .eClass()
-                                                                 .getEPackage()))
-        .forEach(eObject -> selector.setSelected(eObject, true));
-    return selector.createView();
-  }
-
-  @Override
-  public void updateView(ModifiableView view) {
-    throw new UnsupportedOperationException("Used view class does not call this");
-  }
-
-  @Override
-  public void commitViewChanges(ModifiableView view, VitruviusChange<HierarchicalId> change) {
-    throw new UnsupportedOperationException("Used view class does not call this");
-  }
-
-  /**
-   * @param closingChain Because a wrapping view (e.g., ChangeDerivingView) might close our
-   *                     source model view when we close it, the closing has to be deferred until
-   *                     the source view is closed.
-   */
-  private record CommittableOperationBasedView(OperationBasedView view, CommittableView sourceView,
-                                               CommittableOperationBasedView closingChain)
-      implements CommittableView {
-    private CommittableOperationBasedView(OperationBasedView view, CommittableView sourceView) {
-      this(view, sourceView, null);
+        return structure;
     }
 
     @Override
-    public void update() {
-      view.update();
+    public AllSelector createSelector(ChangeableViewSource source) {
+        return new AllSelector(this, source);
     }
 
     @Override
-    public void commitChanges() {
-      view.commit();
-      sourceView.commitChanges();
+    public ModifiableView createView(AllSelector selector) {
+        return new OperationBasedView(selector);
     }
 
-    @Override
-    public Collection<EObject> getRootObjects() {
-      return view.getRootObjects();
-    }
+    private View createOriginView(ChangeableViewSource viewSource) {
+        Set<EPackage> requiredOriginMetamodels = new HashSet<>(getOriginMetamodels());
+        List<View> views = new ArrayList<>();
 
-    @Override
-    public boolean isModified() {
-      return view.isModified();
-    }
-
-    @Override
-    public boolean isOutdated() {
-      return sourceView.isOutdated();
-    }
-
-    @Override
-    public boolean isClosed() {
-      return false;
-    }
-
-    @Override
-    public void registerRoot(EObject eObject, URI uri) {
-      view.registerRoot(eObject, uri);
-    }
-
-    @Override
-    public void moveRoot(EObject eObject, URI uri) {
-      view.moveRoot(eObject, uri);
-    }
-
-    @Override
-    public ViewSelection getSelection() {
-      return view.getSelection();
-    }
-
-    @Override
-    public ViewType<? extends ViewSelector> getViewType() {
-      return view.getViewType();
-    }
-
-    @Override
-    public CommittableView withChangeRecordingTrait() {
-      return null;
-    }
-
-    @Override
-    public CommittableView withChangeDerivingTrait(
-        StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy) {
-      return null;
-    }
-
-    @Override
-    public void close() throws Exception {
-      sourceView.close();
-      if (closingChain != null) {
-        closingChain.close();
-      } else {
-        view.close();
-      }
-    }
-  }
-
-  private class OperationBasedView implements ModifiableView {
-    private final AllSelector selector;
-
-    private final ViewResourceAccessImpl viewResourceAccess;
-    private final ViewWrappingOriginResourceAccessImpl originResourceAccess;
-    private final InternalViewImpl internalView;
-
-    private boolean viewChanged = false;
-    private boolean closed = false;
-
-    public OperationBasedView(AllSelector selector) {
-      this.selector = selector;
-
-      originResourceAccess =
-          new ViewWrappingOriginResourceAccessImpl(createOriginView(selector.getViewSource()));
-      viewResourceAccess = new ViewResourceAccessImpl(createPlaceholderViewUri(), ignored -> {
-        throw new UnsupportedOperationException();
-      });
-      internalView = new InternalViewImpl(getStructure(), viewResourceAccess, originResourceAccess,
-                                          DefaultViewObserver.INSTANCE);
-
-      update();
-    }
-
-    @Override
-    public void update() {
-      removeChangeListeners(viewResourceAccess.getResourceSet());
-
-      originResourceAccess.update();
-
-      internalView.update();
-      viewChanged = false;
-
-      addChangeListeners(viewResourceAccess.getResourceSet());
-    }
-
-    public void commit() {
-      internalView.commit();
-      viewChanged = false;
-    }
-
-    @Override
-    public Collection<EObject> getRootObjects() {
-      return viewResourceAccess.getRoots();
-    }
-
-    @Override
-    public boolean isModified() {
-      return viewChanged;
-    }
-
-    @Override
-    public boolean isOutdated() {
-      return originResourceAccess.isOutdated();
-    }
-
-    @Override
-    public void close() throws Exception {
-      if (!closed) {
-        closed = true;
-
-        internalView.close();
-
-        originResourceAccess.close();
-
-        removeChangeListeners(viewResourceAccess.getResourceSet());
-
-        viewResourceAccess.close();
-      }
-    }
-
-    @Override
-    public boolean isClosed() {
-      return false;
-    }
-
-    @Override
-    public void registerRoot(EObject eObject, URI uri) {
-      viewResourceAccess.registerRoot(eObject, uri);
-    }
-
-    @Override
-    public void moveRoot(EObject eObject, URI uri) {
-      viewResourceAccess.moveRoot(eObject, uri);
-    }
-
-    @Override
-    public ViewSelection getSelection() {
-      return selector;
-    }
-
-    @Override
-    public ViewType<? extends ViewSelector> getViewType() {
-      return OperationBasedViewType.this;
-    }
-
-    @Override
-    public CommittableView withChangeRecordingTrait() {
-      return new CommittableOperationBasedView(this, originResourceAccess
-          .getView()
-          .withChangeRecordingTrait());
-    }
-
-    @Override
-    public CommittableView withChangeDerivingTrait(
-        StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy) {
-      return new CommittableOperationBasedView(this, originResourceAccess
-          .getView()
-          .withChangeDerivingTrait(stateBasedChangeResolutionStrategy));
-    }
-
-    @Override
-    public void modifyContents(Consumer<ResourceSet> consumer) {
-      consumer.accept(viewResourceAccess.getResourceSet());
-    }
-
-    @Override
-    public ChangeableViewSource getViewSource() {
-      return selector.getViewSource();
-    }
-
-    private void addChangeListeners(Notifier notifier) {
-      notifier
-          .eAdapters()
-          .add(
-              new AdapterImpl() {
-                @Override
-                public void notifyChanged(Notification notification) {
-                  viewChanged = true;
+        if (viewTypeProvider != null) {
+            for (ViewType<?> viewType : viewTypeProvider.getViewTypes()) {
+                if (viewType.getMetamodel() != null
+                        && requiredOriginMetamodels.remove(viewType.getMetamodel())) {
+                    views.add(viewType.createSelector(viewSource).createView());
                 }
-              });
-      switch (notifier) {
-        case ResourceSet resourceSet -> resourceSet
-            .getResources()
-            .forEach(this::addChangeListeners);
-        case Resource resource -> resource
-            .getContents()
-            .forEach(this::addChangeListeners);
-        case EObject eObject -> eObject
-            .eContents()
-            .forEach(this::addChangeListeners);
-        default -> {
+            }
         }
-      }
+
+        if (!requiredOriginMetamodels.isEmpty()) {
+            views.add(createDirectOriginModelView(requiredOriginMetamodels, viewSource));
+        }
+
+        if (views.size() == 1) {
+            return views.getFirst();
+        }
+
+        return new CompositeView(views);
     }
 
-    private void removeChangeListeners(ResourceSet resourceSet) {
-      resourceSet
-          .getAllContents()
-          .forEachRemaining(eObject -> eObject
-              .eAdapters()
-              .clear());
+    private View createDirectOriginModelView(
+            Set<EPackage> requiredOriginMetamodels, ChangeableViewSource viewSource) {
+        var viewType = new IdentityMappingViewType(String.format("%s_InternalIdentity", getName()));
+        var selector = viewType.createSelector(viewSource);
+        selector.getSelectableElements().stream()
+                .filter(
+                        eObject ->
+                                requiredOriginMetamodels.contains(eObject.eClass().getEPackage()))
+                .forEach(eObject -> selector.setSelected(eObject, true));
+        return selector.createView();
     }
-  }
+
+    @Override
+    public void updateView(ModifiableView view) {
+        throw new UnsupportedOperationException("Used view class does not call this");
+    }
+
+    @Override
+    public void commitViewChanges(ModifiableView view, VitruviusChange<HierarchicalId> change) {
+        throw new UnsupportedOperationException("Used view class does not call this");
+    }
+
+    /**
+     * @param closingChain Because a wrapping view (e.g., ChangeDerivingView) might close our source
+     *     model view when we close it, the closing has to be deferred until the source view is
+     *     closed.
+     */
+    private record CommittableOperationBasedView(
+            OperationBasedView view,
+            CommittableView sourceView,
+            CommittableOperationBasedView closingChain)
+            implements CommittableView {
+        private CommittableOperationBasedView(OperationBasedView view, CommittableView sourceView) {
+            this(view, sourceView, null);
+        }
+
+        @Override
+        public void update() {
+            view.update();
+        }
+
+        @Override
+        public void commitChanges() {
+            view.commit();
+            sourceView.commitChanges();
+        }
+
+        @Override
+        public Collection<EObject> getRootObjects() {
+            return view.getRootObjects();
+        }
+
+        @Override
+        public boolean isModified() {
+            return view.isModified();
+        }
+
+        @Override
+        public boolean isOutdated() {
+            return sourceView.isOutdated();
+        }
+
+        @Override
+        public boolean isClosed() {
+            return false;
+        }
+
+        @Override
+        public void registerRoot(EObject eObject, URI uri) {
+            view.registerRoot(eObject, uri);
+        }
+
+        @Override
+        public void moveRoot(EObject eObject, URI uri) {
+            view.moveRoot(eObject, uri);
+        }
+
+        @Override
+        public ViewSelection getSelection() {
+            return view.getSelection();
+        }
+
+        @Override
+        public ViewType<? extends ViewSelector> getViewType() {
+            return view.getViewType();
+        }
+
+        @Override
+        public CommittableView withChangeRecordingTrait() {
+            return null;
+        }
+
+        @Override
+        public CommittableView withChangeDerivingTrait(
+                StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy) {
+            return null;
+        }
+
+        @Override
+        public void close() throws Exception {
+            sourceView.close();
+            if (closingChain != null) {
+                closingChain.close();
+            } else {
+                view.close();
+            }
+        }
+    }
+
+    private class OperationBasedView implements ModifiableView {
+        private final AllSelector selector;
+
+        private final ViewResourceAccessImpl viewResourceAccess;
+        private final ViewWrappingOriginResourceAccessImpl originResourceAccess;
+        private final InternalViewImpl internalView;
+
+        private boolean viewChanged = false;
+        private boolean closed = false;
+
+        public OperationBasedView(AllSelector selector) {
+            this.selector = selector;
+
+            originResourceAccess =
+                    new ViewWrappingOriginResourceAccessImpl(
+                            createOriginView(selector.getViewSource()));
+            viewResourceAccess =
+                    new ViewResourceAccessImpl(
+                            createPlaceholderViewUri(),
+                            ignored -> {
+                                throw new UnsupportedOperationException();
+                            });
+            internalView =
+                    new InternalViewImpl(
+                            getStructure(),
+                            viewResourceAccess,
+                            originResourceAccess,
+                            DefaultViewObserver.INSTANCE);
+
+            update();
+        }
+
+        @Override
+        public void update() {
+            removeChangeListeners(viewResourceAccess.getResourceSet());
+
+            originResourceAccess.update();
+
+            internalView.update();
+            viewChanged = false;
+
+            addChangeListeners(viewResourceAccess.getResourceSet());
+        }
+
+        public void commit() {
+            internalView.commit();
+            viewChanged = false;
+        }
+
+        @Override
+        public Collection<EObject> getRootObjects() {
+            return viewResourceAccess.getRoots();
+        }
+
+        @Override
+        public boolean isModified() {
+            return viewChanged;
+        }
+
+        @Override
+        public boolean isOutdated() {
+            return originResourceAccess.isOutdated();
+        }
+
+        @Override
+        public void close() throws Exception {
+            if (!closed) {
+                closed = true;
+
+                internalView.close();
+
+                originResourceAccess.close();
+
+                removeChangeListeners(viewResourceAccess.getResourceSet());
+
+                viewResourceAccess.close();
+            }
+        }
+
+        @Override
+        public boolean isClosed() {
+            return false;
+        }
+
+        @Override
+        public void registerRoot(EObject eObject, URI uri) {
+            viewResourceAccess.registerRoot(eObject, uri);
+        }
+
+        @Override
+        public void moveRoot(EObject eObject, URI uri) {
+            viewResourceAccess.moveRoot(eObject, uri);
+        }
+
+        @Override
+        public ViewSelection getSelection() {
+            return selector;
+        }
+
+        @Override
+        public ViewType<? extends ViewSelector> getViewType() {
+            return OperationBasedViewType.this;
+        }
+
+        @Override
+        public CommittableView withChangeRecordingTrait() {
+            return new CommittableOperationBasedView(
+                    this, originResourceAccess.getView().withChangeRecordingTrait());
+        }
+
+        @Override
+        public CommittableView withChangeDerivingTrait(
+                StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy) {
+            return new CommittableOperationBasedView(
+                    this,
+                    originResourceAccess
+                            .getView()
+                            .withChangeDerivingTrait(stateBasedChangeResolutionStrategy));
+        }
+
+        @Override
+        public void modifyContents(Consumer<ResourceSet> consumer) {
+            consumer.accept(viewResourceAccess.getResourceSet());
+        }
+
+        @Override
+        public ChangeableViewSource getViewSource() {
+            return selector.getViewSource();
+        }
+
+        private void addChangeListeners(Notifier notifier) {
+            notifier.eAdapters()
+                    .add(
+                            new AdapterImpl() {
+                                @Override
+                                public void notifyChanged(Notification notification) {
+                                    viewChanged = true;
+                                }
+                            });
+            switch (notifier) {
+                case ResourceSet resourceSet ->
+                    resourceSet.getResources().forEach(this::addChangeListeners);
+                case Resource resource -> resource.getContents().forEach(this::addChangeListeners);
+                case EObject eObject -> eObject.eContents().forEach(this::addChangeListeners);
+                default -> {}
+            }
+        }
+
+        private void removeChangeListeners(ResourceSet resourceSet) {
+            resourceSet.getAllContents().forEachRemaining(eObject -> eObject.eAdapters().clear());
+        }
+    }
 }

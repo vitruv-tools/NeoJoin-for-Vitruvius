@@ -15,13 +15,27 @@
     Authors: Max Vetrenko, Mauryan Kansara, Ruslan Diachenko, Roman Ivanov.
  -->
 
+<!--
+    Common Checkstyle configuration of the NeoJoin repositories (NeoJoin, NeoJoin-TGG-Backend,
+    NeoJoin-for-Vitruvius). Every repository has an identical copy of this file.
+
+    Derived from the Google Java Style configuration (https://google.github.io/styleguide/javaguide.html)
+    with these changes:
+    - Indentation of 4 spaces (continuation lines 4).
+    - Line length 120.
+    - Package names may contain underscores (expression_parser, emsl_utils, ...).
+    - No import order check. Star imports, also static ones, are not allowed.
+    - Only .java files are checked.
+    The severity is "warning": violations are printed and do not fail the build.
+-->
+
 <module name="Checker">
 
   <property name="charset" value="UTF-8"/>
 
   <property name="severity" value="${org.checkstyle.google.severity}" default="warning"/>
 
-  <property name="fileExtensions" value="java, properties, xml"/>
+  <property name="fileExtensions" value="java"/>
   <!-- Excludes all 'module-info.java' files              -->
   <!-- See https://checkstyle.org/filefilters/index.html -->
   <module name="BeforeExecutionExclusionFileFilter">
@@ -53,7 +67,7 @@
 
   <module name="LineLength">
     <property name="fileExtensions" value="java"/>
-    <property name="max" value="100"/>
+    <property name="max" value="120"/>
     <property name="ignorePattern"
               value="^package.*|^import.*|href\s*=\s*&quot;[^&quot;]*&quot;|http://|https://|ftp://"/>
   </module>
@@ -209,7 +223,7 @@
       <property name="option" value="nl"/>
     </module>
     <module name="PackageName">
-      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9]*)*$"/>
+      <property name="format" value="^[a-z]+(\.[a-z][a-z0-9_]*)*$"/>
       <message key="name.invalidPattern"
                value="Package name ''{0}'' must match pattern ''{1}''."/>
     </module>
@@ -287,12 +301,12 @@
                value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
     </module>
     <module name="Indentation">
-      <property name="basicOffset" value="2"/>
-      <property name="braceAdjustment" value="2"/>
-      <property name="caseIndent" value="2"/>
+      <property name="basicOffset" value="4"/>
+      <property name="braceAdjustment" value="4"/>
+      <property name="caseIndent" value="4"/>
       <property name="throwsIndent" value="4"/>
       <property name="lineWrappingIndentation" value="4"/>
-      <property name="arrayInitIndent" value="2"/>
+      <property name="arrayInitIndent" value="4"/>
     </module>
     <!-- Suppression for block code until we find a way to detect them properly
          until https://github.com/checkstyle/checkstyle/issues/15769 -->
@@ -314,12 +328,6 @@
     <module name="OverloadMethodsDeclarationOrder"/>
     <module name="ConstructorsDeclarationGrouping"/>
     <module name="VariableDeclarationUsageDistance"/>
-    <module name="CustomImportOrder">
-      <property name="sortImportsInGroupAlphabetically" value="true"/>
-      <property name="separateLineBetweenGroups" value="true"/>
-      <property name="customImportOrderRules" value="STATIC###THIRD_PARTY_PACKAGE"/>
-      <property name="tokens" value="IMPORT, STATIC_IMPORT, PACKAGE_DEF"/>
-    </module>
     <module name="MethodParamPad">
       <property name="tokens"
                 value="CTOR_DEF, LITERAL_NEW, METHOD_CALL, METHOD_DEF, CTOR_CALL,

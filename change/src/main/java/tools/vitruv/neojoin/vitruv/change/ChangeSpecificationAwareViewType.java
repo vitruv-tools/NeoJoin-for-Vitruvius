@@ -1,17 +1,12 @@
 package tools.vitruv.neojoin.vitruv.change;
 
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+
 import tools.vitruv.change.atomic.EChange;
 import tools.vitruv.change.atomic.hid.HierarchicalId;
 import tools.vitruv.change.changederivation.StateBasedChangeResolutionStrategy;
@@ -37,252 +32,299 @@ import tools.vitruv.neojoin.vitruv.views.internal.ViewResourceAccess;
 import tools.vitruv.neojoin.vitruv.views.internal.impl.InternalViewImpl;
 import tools.vitruv.neojoin.vitruv.views.internal.impl.ResourceAccessWrappingOriginResourceAccess;
 
-/**
- * Abstract base class for view types that can participate in change propagation.
- */
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+
+/** Abstract base class for view types that can participate in change propagation. */
 public abstract class ChangeSpecificationAwareViewType extends OperationBasedViewType
-    implements ChangePropagatingViewTypeSpecification {
-  public ChangeSpecificationAwareViewType(
-      String name, List<EPackage> originMetamodels, EPackage viewTypeMetamodel,
-      ViewTypeProvider viewTypeProvider) {
-    super(name, originMetamodels, viewTypeMetamodel, viewTypeProvider);
-  }
-
-  @Override
-  public MetamodelDescriptor getOriginMetamodelDescriptor() {
-    return MetamodelDescriptor.of(new HashSet<>(getOriginMetamodels()));
-  }
-
-  @Override
-  public MetamodelDescriptor getViewTypeMetamodelDescriptor() {
-    return MetamodelDescriptor.of(getMetamodel());
-  }
-
-  @Override
-  public ChangePropagationView createView(
-      ResourceAccess resourceAccess, CorrespondenceModelAccess correspondenceModelAccess,
-      Function<String, URI> uriFactory, ChangePropagationObservable observable,
-      CorrespondenceObjectViewObjectTranslatorFactory correspondenceObjectViewObjectTranslatorFactory) {
-    return new ChangePropagationViewImpl(resourceAccess, correspondenceModelAccess,
-                                         createUri(uriFactory), observable,
-                                         correspondenceObjectViewObjectTranslatorFactory);
-  }
-
-  private class ChangePropagationViewImpl implements ChangePropagationView {
-    private final OriginResourceAccess originResourceAccess;
-    private final ViewResourceAccess viewResourceAccess;
-    private final InternalViewImpl internalView;
-
-    private final URI viewUri;
-
-    private final CorrespondenceModelAccess correspondenceModelAccess;
-    private final CorrespondenceObjectViewObjectTranslator correspondenceObjectViewObjectTranslator;
-    private final ViewCorrespondencesImpl viewCorrespondences;
-
-    public ChangePropagationViewImpl(
-        ResourceAccess resourceAccess, CorrespondenceModelAccess correspondenceModelAccess,
-        URI viewUri, ChangePropagationObservable observable,
-        CorrespondenceObjectViewObjectTranslatorFactory correspondenceObjectViewObjectTranslatorFactory) {
-      this.originResourceAccess = new ResourceAccessWrappingOriginResourceAccess(resourceAccess,
-                                                                                 correspondenceModelAccess.getResource());
-      this.viewUri = this.originResourceAccess.getViewUriHint(getOriginMetamodels(), getMetamodel())
-                         .orElse(viewUri);
-      this.viewResourceAccess =
-          new ViewResourceAccessImpl(this.viewUri, resourceAccess::getMetadataModelURI);
-
-      this.internalView =
-          new InternalViewImpl(getStructure(), viewResourceAccess, originResourceAccess,
-                               observable != null ? new ViewObserver(observable)
-                                                  : DefaultViewObserver.INSTANCE);
-      this.internalView.update();
-
-      this.correspondenceModelAccess = correspondenceModelAccess;
-      this.viewCorrespondences = new ViewCorrespondencesImpl(getViewTypeMetamodelDescriptor(),
-                                                             getOriginMetamodelDescriptor(),
-                                                             internalView.getCorrespondences());
-
-      if (correspondenceObjectViewObjectTranslatorFactory != null) {
-        this.correspondenceObjectViewObjectTranslator =
-            correspondenceObjectViewObjectTranslatorFactory.createCorrespondenceResolver(
-                ChangeSpecificationAwareViewType.this, viewResourceAccess);
-      } else {
-        this.correspondenceObjectViewObjectTranslator = null;
-      }
+        implements ChangePropagatingViewTypeSpecification {
+    public ChangeSpecificationAwareViewType(
+            String name,
+            List<EPackage> originMetamodels,
+            EPackage viewTypeMetamodel,
+            ViewTypeProvider viewTypeProvider) {
+        super(name, originMetamodels, viewTypeMetamodel, viewTypeProvider);
     }
 
     @Override
-    public ResourceAccess getViewResourceAccess() {
-      return viewResourceAccess;
+    public MetamodelDescriptor getOriginMetamodelDescriptor() {
+        return MetamodelDescriptor.of(new HashSet<>(getOriginMetamodels()));
     }
 
     @Override
-    public ModelRepositorySnapshot createSnapshot() {
-      return new ViewSnapshot(viewResourceAccess,
-                              correspondenceModelAccess.getCorrespondenceModel());
+    public MetamodelDescriptor getViewTypeMetamodelDescriptor() {
+        return MetamodelDescriptor.of(getMetamodel());
     }
 
     @Override
-    public List<EChange<EObject>> fitAndDetermineChanges(
-        ResourceAccess changedOrigin, CorrespondenceModelAccess changedCorrespondenceModel,
-        List<EChange<EObject>> originChanges,
-        Function<EObject, EObject> unchangedToChanged) {
-      List<EChange<EObject>> viewChanges;
-
-      try (ChangePropagationViewImpl changedView = new ChangePropagationViewImpl(changedOrigin,
-                                                                                 changedCorrespondenceModel,
-                                                                                 viewUri, null,
-                                                                                 null)
-      ) {
-        StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy =
-            getStateBasedChangeResolutionStrategy(this, changedView, unchangedToChanged);
-        viewChanges =
-            deriveAndApplyChangesToReach(changedView, stateBasedChangeResolutionStrategy);
-        internalView.mapAndApplyCorrespondences(changedView.internalView.getCorrespondences(),
-                                                unchangedToChanged);
-      } catch (Exception e) {
-        throw new RuntimeException(e);
-      }
-
-      if (correspondenceObjectViewObjectTranslator != null) {
-        correspondenceObjectViewObjectTranslator.onViewFitted();
-      }
-
-      return viewChanges;
+    public ChangePropagationView createView(
+            ResourceAccess resourceAccess,
+            CorrespondenceModelAccess correspondenceModelAccess,
+            Function<String, URI> uriFactory,
+            ChangePropagationObservable observable,
+            CorrespondenceObjectViewObjectTranslatorFactory
+                    correspondenceObjectViewObjectTranslatorFactory) {
+        return new ChangePropagationViewImpl(
+                resourceAccess,
+                correspondenceModelAccess,
+                createUri(uriFactory),
+                observable,
+                correspondenceObjectViewObjectTranslatorFactory);
     }
 
-    @Override
-    public CorrespondenceObjectViewObjectTranslator getCorrespondenceResolver() {
-      if (correspondenceObjectViewObjectTranslator != null) {
-        correspondenceObjectViewObjectTranslator.onResolverUse();
-      }
-      return correspondenceObjectViewObjectTranslator;
-    }
+    private class ChangePropagationViewImpl implements ChangePropagationView {
+        private final OriginResourceAccess originResourceAccess;
+        private final ViewResourceAccess viewResourceAccess;
+        private final InternalViewImpl internalView;
 
-    @Override
-    public ViewCorrespondences getCorrespondences() {
-      return viewCorrespondences;
-    }
+        private final URI viewUri;
 
-    @Override
-    public void commit() {
-      internalView.commit();
-    }
+        private final CorrespondenceModelAccess correspondenceModelAccess;
+        private final CorrespondenceObjectViewObjectTranslator
+                correspondenceObjectViewObjectTranslator;
+        private final ViewCorrespondencesImpl viewCorrespondences;
 
-    private static StateBasedChangeResolutionStrategy getStateBasedChangeResolutionStrategy(
-        ChangePropagationViewImpl unchangedView,
-        ChangePropagationViewImpl changedView,
-        Function<EObject, EObject> unchangedToChanged) {
-      return new ViewAdaptedStateBasedChangeResolutionStrategy(viewObject -> {
-        Resource resource = viewObject.eResource();
-        if (resource == null || resource.getResourceSet() == null) {
-          return null;
+        public ChangePropagationViewImpl(
+                ResourceAccess resourceAccess,
+                CorrespondenceModelAccess correspondenceModelAccess,
+                URI viewUri,
+                ChangePropagationObservable observable,
+                CorrespondenceObjectViewObjectTranslatorFactory
+                        correspondenceObjectViewObjectTranslatorFactory) {
+            this.originResourceAccess =
+                    new ResourceAccessWrappingOriginResourceAccess(
+                            resourceAccess, correspondenceModelAccess.getResource());
+            this.viewUri =
+                    this.originResourceAccess
+                            .getViewUriHint(getOriginMetamodels(), getMetamodel())
+                            .orElse(viewUri);
+            this.viewResourceAccess =
+                    new ViewResourceAccessImpl(this.viewUri, resourceAccess::getMetadataModelURI);
+
+            this.internalView =
+                    new InternalViewImpl(
+                            getStructure(),
+                            viewResourceAccess,
+                            originResourceAccess,
+                            observable != null
+                                    ? new ViewObserver(observable)
+                                    : DefaultViewObserver.INSTANCE);
+            this.internalView.update();
+
+            this.correspondenceModelAccess = correspondenceModelAccess;
+            this.viewCorrespondences =
+                    new ViewCorrespondencesImpl(
+                            getViewTypeMetamodelDescriptor(),
+                            getOriginMetamodelDescriptor(),
+                            internalView.getCorrespondences());
+
+            if (correspondenceObjectViewObjectTranslatorFactory != null) {
+                this.correspondenceObjectViewObjectTranslator =
+                        correspondenceObjectViewObjectTranslatorFactory
+                                .createCorrespondenceResolver(
+                                        ChangeSpecificationAwareViewType.this, viewResourceAccess);
+            } else {
+                this.correspondenceObjectViewObjectTranslator = null;
+            }
         }
-        if (resource.getResourceSet() == changedView.viewResourceAccess.getResourceSet()) {
-          return changedView.internalView.getCorrespondences()
-                     .getCorrespondingOriginObjectsForViewObject(viewObject);
-        } else {
-          // Change Resolution creates a copy of the unchanged side, so we have to map back.
 
-          Resource originalResource = unchangedView.viewResourceAccess.getResourceSet()
-                                          .getResource(resource.getURI(), false);
-          if (originalResource == null) {
-            return null;
-          }
+        @Override
+        public ResourceAccess getViewResourceAccess() {
+            return viewResourceAccess;
+        }
 
-          EObject originalViewObject =
-              originalResource.getEObject(resource.getURIFragment(viewObject));
-          if (originalViewObject == null) {
-            return null;
-          }
+        @Override
+        public ModelRepositorySnapshot createSnapshot() {
+            return new ViewSnapshot(
+                    viewResourceAccess, correspondenceModelAccess.getCorrespondenceModel());
+        }
 
-          List<EObject> originObjects = unchangedView.internalView.getCorrespondences()
+        @Override
+        public List<EChange<EObject>> fitAndDetermineChanges(
+                ResourceAccess changedOrigin,
+                CorrespondenceModelAccess changedCorrespondenceModel,
+                List<EChange<EObject>> originChanges,
+                Function<EObject, EObject> unchangedToChanged) {
+            List<EChange<EObject>> viewChanges;
+
+            try (ChangePropagationViewImpl changedView =
+                    new ChangePropagationViewImpl(
+                            changedOrigin, changedCorrespondenceModel, viewUri, null, null)) {
+                StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy =
+                        getStateBasedChangeResolutionStrategy(
+                                this, changedView, unchangedToChanged);
+                viewChanges =
+                        deriveAndApplyChangesToReach(
+                                changedView, stateBasedChangeResolutionStrategy);
+                internalView.mapAndApplyCorrespondences(
+                        changedView.internalView.getCorrespondences(), unchangedToChanged);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            if (correspondenceObjectViewObjectTranslator != null) {
+                correspondenceObjectViewObjectTranslator.onViewFitted();
+            }
+
+            return viewChanges;
+        }
+
+        @Override
+        public CorrespondenceObjectViewObjectTranslator getCorrespondenceResolver() {
+            if (correspondenceObjectViewObjectTranslator != null) {
+                correspondenceObjectViewObjectTranslator.onResolverUse();
+            }
+            return correspondenceObjectViewObjectTranslator;
+        }
+
+        @Override
+        public ViewCorrespondences getCorrespondences() {
+            return viewCorrespondences;
+        }
+
+        @Override
+        public void commit() {
+            internalView.commit();
+        }
+
+        private static StateBasedChangeResolutionStrategy getStateBasedChangeResolutionStrategy(
+                ChangePropagationViewImpl unchangedView,
+                ChangePropagationViewImpl changedView,
+                Function<EObject, EObject> unchangedToChanged) {
+            return new ViewAdaptedStateBasedChangeResolutionStrategy(
+                    viewObject -> {
+                        Resource resource = viewObject.eResource();
+                        if (resource == null || resource.getResourceSet() == null) {
+                            return null;
+                        }
+                        if (resource.getResourceSet()
+                                == changedView.viewResourceAccess.getResourceSet()) {
+                            return changedView
+                                    .internalView
+                                    .getCorrespondences()
+                                    .getCorrespondingOriginObjectsForViewObject(viewObject);
+                        } else {
+                            // Change Resolution creates a copy of the unchanged side, so we have to
+                            // map back.
+
+                            Resource originalResource =
+                                    unchangedView
+                                            .viewResourceAccess
+                                            .getResourceSet()
+                                            .getResource(resource.getURI(), false);
+                            if (originalResource == null) {
+                                return null;
+                            }
+
+                            EObject originalViewObject =
+                                    originalResource.getEObject(
+                                            resource.getURIFragment(viewObject));
+                            if (originalViewObject == null) {
+                                return null;
+                            }
+
+                            List<EObject> originObjects =
+                                    unchangedView
+                                            .internalView
+                                            .getCorrespondences()
                                             .getCorrespondingOriginObjectsForViewObject(
-                                                originalViewObject);
-          if (originObjects == null) {
-            return null;
-          }
+                                                    originalViewObject);
+                            if (originObjects == null) {
+                                return null;
+                            }
 
-          return originObjects.stream().map(unchangedToChanged).toList();
-        }
-      });
-    }
-
-    private List<EChange<EObject>> deriveAndApplyChangesToReach(
-        ChangePropagationViewImpl changedView,
-        StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy) {
-      Map<URI, Resource> localResourceMap = getResources();
-      Map<URI, Resource> changedResourceMap = changedView.getResources();
-
-      List<URI> uris = Sets.union(localResourceMap.keySet(), changedResourceMap.keySet())
-                           .stream()
-                           .sorted(Comparator.comparing(URI::toString))
-                           .toList();
-      List<VitruviusChange<HierarchicalId>> changes = new ArrayList<>();
-
-      for (URI uri : uris) {
-        Resource localResource = localResourceMap.get(uri);
-        Resource changedResource = changedResourceMap.get(uri);
-        assert localResource != null || changedResource != null;
-
-        VitruviusChange<HierarchicalId> change;
-
-        if (localResource == null) {
-          change = stateBasedChangeResolutionStrategy.getChangeSequenceForCreated(changedResource);
-        } else if (changedResource == null) {
-          change = stateBasedChangeResolutionStrategy.getChangeSequenceForDeleted(localResource);
-        } else {
-          change = stateBasedChangeResolutionStrategy.getChangeSequenceBetween(changedResource,
-                                                                               localResource);
+                            return originObjects.stream().map(unchangedToChanged).toList();
+                        }
+                    });
         }
 
-        if (change.containsConcreteChange()) {
-          changes.add(change);
+        private List<EChange<EObject>> deriveAndApplyChangesToReach(
+                ChangePropagationViewImpl changedView,
+                StateBasedChangeResolutionStrategy stateBasedChangeResolutionStrategy) {
+            Map<URI, Resource> localResourceMap = getResources();
+            Map<URI, Resource> changedResourceMap = changedView.getResources();
+
+            List<URI> uris =
+                    Sets.union(localResourceMap.keySet(), changedResourceMap.keySet()).stream()
+                            .sorted(Comparator.comparing(URI::toString))
+                            .toList();
+            List<VitruviusChange<HierarchicalId>> changes = new ArrayList<>();
+
+            for (URI uri : uris) {
+                Resource localResource = localResourceMap.get(uri);
+                Resource changedResource = changedResourceMap.get(uri);
+                assert localResource != null || changedResource != null;
+
+                VitruviusChange<HierarchicalId> change;
+
+                if (localResource == null) {
+                    change =
+                            stateBasedChangeResolutionStrategy.getChangeSequenceForCreated(
+                                    changedResource);
+                } else if (changedResource == null) {
+                    change =
+                            stateBasedChangeResolutionStrategy.getChangeSequenceForDeleted(
+                                    localResource);
+                } else {
+                    change =
+                            stateBasedChangeResolutionStrategy.getChangeSequenceBetween(
+                                    changedResource, localResource);
+                }
+
+                if (change.containsConcreteChange()) {
+                    changes.add(change);
+                }
+            }
+
+            if (changes.isEmpty()) {
+                return List.of();
+            }
+
+            VitruviusChange<HierarchicalId> change =
+                    VitruviusChangeFactory.getInstance().createCompositeChange(changes);
+
+            return VitruviusChangeResolverFactory.forHierarchicalIds(
+                            viewResourceAccess.getResourceSet())
+                    .resolveAndApply(change)
+                    .getEChanges();
         }
-      }
 
-      if (changes.isEmpty()) {
-        return List.of();
-      }
+        private Map<URI, Resource> getResources() {
+            Map<URI, Resource> resources = new HashMap<>();
+            for (Resource resource : viewResourceAccess.getResourceSet().getResources()) {
+                resources.put(resource.getURI(), resource);
+            }
+            return resources;
+        }
 
-      VitruviusChange<HierarchicalId> change =
-          VitruviusChangeFactory.getInstance().createCompositeChange(changes);
+        @Override
+        public void close() throws Exception {
+            if (correspondenceObjectViewObjectTranslator != null) {
+                correspondenceObjectViewObjectTranslator.close();
+            }
 
-      return VitruviusChangeResolverFactory.forHierarchicalIds(viewResourceAccess.getResourceSet())
-                 .resolveAndApply(change)
-                 .getEChanges();
+            internalView.close();
+
+            viewResourceAccess.close();
+            originResourceAccess.close();
+        }
+
+        private static final class ViewObserver extends DefaultViewObserver {
+            private final ChangePropagationObservable observable;
+
+            private ViewObserver(ChangePropagationObservable observable) {
+                this.observable = observable;
+            }
+
+            @Override
+            public void originObjectCreated(EObject eObject) {
+                observable.notifyObjectCreated(eObject);
+            }
+        }
     }
-
-    private Map<URI, Resource> getResources() {
-      Map<URI, Resource> resources = new HashMap<>();
-      for (Resource resource : viewResourceAccess.getResourceSet().getResources()) {
-        resources.put(resource.getURI(), resource);
-      }
-      return resources;
-    }
-
-    @Override
-    public void close() throws Exception {
-      if (correspondenceObjectViewObjectTranslator != null) {
-        correspondenceObjectViewObjectTranslator.close();
-      }
-
-      internalView.close();
-
-      viewResourceAccess.close();
-      originResourceAccess.close();
-    }
-
-    private static final class ViewObserver extends DefaultViewObserver {
-      private final ChangePropagationObservable observable;
-
-      private ViewObserver(ChangePropagationObservable observable) {
-        this.observable = observable;
-      }
-
-      @Override
-      public void originObjectCreated(EObject eObject) {
-        observable.notifyObjectCreated(eObject);
-      }
-    }
-  }
 }

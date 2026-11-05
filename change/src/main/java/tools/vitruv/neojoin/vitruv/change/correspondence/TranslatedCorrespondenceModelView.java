@@ -4,8 +4,8 @@ import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 
 public interface TranslatedCorrespondenceModelView extends AutoCloseable {
-  EditableCorrespondenceModelView<Correspondence> getCorrespondenceModelView();
+    EditableCorrespondenceModelView<Correspondence> getCorrespondenceModelView();
 
-  @Override
-  void close();
+    @Override
+    void close();
 }

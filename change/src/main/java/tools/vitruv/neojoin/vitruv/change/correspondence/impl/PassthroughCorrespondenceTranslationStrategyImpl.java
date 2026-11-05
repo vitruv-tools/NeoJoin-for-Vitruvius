@@ -8,20 +8,20 @@ import tools.vitruv.neojoin.vitruv.change.ViewChangePropagationContext;
 import tools.vitruv.neojoin.vitruv.change.correspondence.CorrespondenceObjectViewObjectTranslatorFactory;
 import tools.vitruv.neojoin.vitruv.change.correspondence.CorrespondenceTranslationStrategy;
 
-public class PassthroughCorrespondenceTranslationStrategyImpl implements
-    CorrespondenceTranslationStrategy {
-  @Override
-  public CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
-      ResourceAccess resourceAccess) {
-    return (viewType, viewResourceAccess) ->
-        new PassthroughCorrespondenceObjectViewObjectTranslatorImpl(
-            MetamodelDescriptor.of(viewType.getMetamodel()));
-  }
+public class PassthroughCorrespondenceTranslationStrategyImpl
+        implements CorrespondenceTranslationStrategy {
+    @Override
+    public CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
+            ResourceAccess resourceAccess) {
+        return (viewType, viewResourceAccess) ->
+                new PassthroughCorrespondenceObjectViewObjectTranslatorImpl(
+                        MetamodelDescriptor.of(viewType.getMetamodel()));
+    }
 
-  @Override
-  public TranslatedCorrespondenceModelViewImpl createTranslatedCorrespondenceModelView(
-      EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-      ViewChangePropagationContext context) {
-    return new TranslatedCorrespondenceModelViewImpl(correspondenceModel);
-  }
+    @Override
+    public TranslatedCorrespondenceModelViewImpl createTranslatedCorrespondenceModelView(
+            EditableCorrespondenceModelView<Correspondence> correspondenceModel,
+            ViewChangePropagationContext context) {
+        return new TranslatedCorrespondenceModelViewImpl(correspondenceModel);
+    }
 }
