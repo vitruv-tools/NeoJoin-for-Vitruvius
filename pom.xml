@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <!-- Build Parent -->
@@ -12,14 +12,14 @@
   </parent>
 
   <!-- Project Information -->
-  <groupId>tools.vitruv.compmodelcons</groupId>
-  <artifactId>tools.vitruv.compmodelcons</artifactId>
+  <groupId>tools.vitruv.neojoin.vitruv</groupId>
+  <artifactId>tools.vitruv.neojoin.vitruv</artifactId>
   <version>0.1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Componentization of Model Consistency</name>
-  <description>MA Thesis.</description>
-  <url>https://github.com/vitruv-tools/Vitruv</url>
+  <name>NeoJoin for Vitruvius</name>
+  <description />
+  <url>https://github.com/vitruv-tools/NeoJoin-for-Vitruvius</url>
 
   <!-- Organizational Information -->
   <licenses>
@@ -29,17 +29,29 @@
     </license>
   </licenses>
 
+  <scm>
+    <connection>scm:git:git://github.com/vitruv-tools/NeoJoin-for-Vitruvius.git</connection>
+    <developerConnection>scm:git:https://github.com/vitruv-tools/NeoJoin-for-Vitruvius.git</developerConnection>
+    <url>https://github.com/vitruv-tools/NeoJoin-for-Vitruvius/tree/main</url>
+  </scm>
+
+  <!-- Properties -->
+  <properties>
+    <maven.compiler.release>21</maven.compiler.release>
+    <maven.compiler.source>21</maven.compiler.source>
+    <maven.compiler.target>21</maven.compiler.target>
+    <sonar.organization>vitruv-tools</sonar.organization>
+    <vitruv.version>4.0.1-compmodelcons-SNAPSHOT</vitruv.version>
+    <vitruv-change.version>4.0.1-compmodelcons-SNAPSHOT</vitruv-change.version>
+    <neojoin.version>0.1.0-SNAPSHOT</neojoin.version>
+  </properties>
+
   <!-- Modules -->
   <modules>
     <module>views</module>
     <module>generator</module>
     <module>change</module>
   </modules>
-
-  <properties>
-    <vitruv.version>4.0.1-compmodelcons-SNAPSHOT</vitruv.version>
-    <vitruv-change.version>4.0.1-compmodelcons-SNAPSHOT</vitruv-change.version>
-  </properties>
 
   <!-- Dependency Management -->
   <dependencyManagement>
@@ -100,12 +112,94 @@
         <artifactId>tools.vitruv.change.utils</artifactId>
         <version>${vitruv-change.version}</version>
       </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.dsls.common</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.dsls.reactions.runtime</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.framework.p2wrappers.emfcompare</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.framework.p2wrappers.emfutils</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.framework.p2wrappers.javautils</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.framework.views</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.framework.vsum</artifactId>
+        <version>${vitruv.version}</version>
+      </dependency>
+
+      <!-- NeoJoin dependencies -->
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.neojoin.emf.transformation</artifactId>
+        <version>${neojoin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.neojoin.frontend.language</artifactId>
+        <version>${neojoin.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>tools.vitruv</groupId>
+        <artifactId>tools.vitruv.neojoin.model</artifactId>
+        <version>${neojoin.version}</version>
+      </dependency>
 
       <!-- External dependencies -->
       <dependency>
+        <groupId>com.google.code.gson</groupId>
+        <artifactId>gson</artifactId>
+        <version>2.15.0</version>
+      </dependency>
+      <dependency>
         <groupId>com.google.guava</groupId>
         <artifactId>guava</artifactId>
-        <version>33.6.0-jre</version>
+        <version>33.7.2-jre</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.inject</groupId>
+        <artifactId>guice</artifactId>
+        <version>7.0.0</version>
+      </dependency>
+      <dependency>
+        <groupId>gg.jte</groupId>
+        <artifactId>jte</artifactId>
+        <version>3.2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>gg.jte</groupId>
+        <artifactId>jte-runtime</artifactId>
+        <version>3.2.5</version>
+      </dependency>
+      <dependency>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr-runtime</artifactId>
+        <version>3.2</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>1.12.0</version>
       </dependency>
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
@@ -115,17 +209,22 @@
       <dependency>
         <groupId>org.eclipse.emf</groupId>
         <artifactId>org.eclipse.emf.common</artifactId>
-        <version>2.45.0</version>
+        <version>2.46.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.emf</groupId>
         <artifactId>org.eclipse.emf.ecore</artifactId>
-        <version>2.42.0</version>
+        <version>2.43.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.emf</groupId>
         <artifactId>org.eclipse.emf.ecore.xmi</artifactId>
-        <version>2.40.0</version>
+        <version>2.41.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.emf</groupId>
+        <artifactId>org.eclipse.emf.mwe2.runtime</artifactId>
+        <version>2.26.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
@@ -144,8 +243,33 @@
         <version>3.12.600</version>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.osgi</artifactId>
+        <version>3.24.300</version>
+      </dependency>
+      <dependency>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>org.eclipse.xtend.lib</artifactId>
+        <version>2.42.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.xtext</groupId>
+        <artifactId>org.eclipse.xtext</artifactId>
+        <version>2.42.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.xtext</groupId>
+        <artifactId>org.eclipse.xtext.common.types</artifactId>
+        <version>2.42.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.xtext</groupId>
+        <artifactId>org.eclipse.xtext.util</artifactId>
+        <version>2.42.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.xtext</groupId>
+        <artifactId>org.eclipse.xtext.xbase</artifactId>
         <version>2.42.0</version>
       </dependency>
       <dependency>
@@ -154,29 +278,31 @@
         <version>2.42.0</version>
       </dependency>
       <dependency>
+        <groupId>org.eclipse.xtext</groupId>
+        <artifactId>org.eclipse.xtext.xtext.generator</artifactId>
+        <version>2.42.0</version>
+      </dependency>
+      <dependency>
         <groupId>org.hamcrest</groupId>
         <artifactId>hamcrest</artifactId>
         <version>3.0</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-api</artifactId>
-        <version>6.1.1</version>
+        <groupId>org.jetbrains</groupId>
+        <artifactId>annotations</artifactId>
+        <version>26.1.0</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.jupiter</groupId>
-        <artifactId>junit-jupiter-params</artifactId>
-        <version>6.1.1</version>
+        <groupId>org.jspecify</groupId>
+        <artifactId>jspecify</artifactId>
+        <version>1.0.1</version>
       </dependency>
       <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-commons</artifactId>
-        <version>6.1.1</version>
-      </dependency>
-      <dependency>
-        <groupId>org.junit.platform</groupId>
-        <artifactId>junit-platform-launcher</artifactId>
-        <version>6.1.1</version>
+        <groupId>org.junit</groupId>
+        <artifactId>junit-bom</artifactId>
+        <version>6.1.3</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
       <dependency>
         <groupId>org.mockito</groupId>
@@ -185,4 +311,30 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
+
+  <!-- Build -->
+  <build>
+    <plugins>
+      <!-- fail if a dependency is resolved to a lower version than one of the versions requested in the dependency tree -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.7.0</version>
+        <executions>
+          <execution>
+            <id>enforce-upper-bound-dependencies</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireUpperBoundDeps />
+              </rules>
+              <fail>true</fail>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

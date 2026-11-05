@@ -1,7 +1,7 @@
-@import tools.vitruv.compmodelcons.generator.backend.description.DeclarationDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.OnPutDeclarationDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.SourceObjectFactoryDeclarationDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.TransformDeclarationDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.DeclarationDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.OnPutDeclarationDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.SourceObjectFactoryDeclarationDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.TransformDeclarationDescription
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param DeclarationDescription declaration

@@ -1,7 +1,7 @@
 @import gg.jte.support.ForSupport
 @import java.util.List
-@import tools.vitruv.compmodelcons.generator.backend.description.ProjectDescription
-@import tools.vitruv.compmodelcons.views.operations.Project
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.ProjectDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.Project
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param ProjectDescription project

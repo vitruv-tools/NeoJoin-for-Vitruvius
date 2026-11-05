@@ -1,7 +1,7 @@
-@import tools.vitruv.compmodelcons.generator.backend.description.FilterDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.JoinDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.OriginDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.SourceDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FilterDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.JoinDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.OriginDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.SourceDescription
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param OriginDescription origin 

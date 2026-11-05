@@ -1,4 +1,4 @@
-module tools.vitruv.compmodelcons.change
+module tools.vitruv.neojoin.vitruv.change
 
 import org.eclipse.emf.mwe2.ecore.EcoreGenerator
 import org.eclipse.emf.mwe.utils.StandaloneSetup
@@ -13,8 +13,8 @@ Workflow {
     }
 
     component = EcoreGenerator {
-        genModel = "platform:/resource/tools.vitruv.compmodelcons.change/src/main/ecore/view_id.genmodel"
-        srcPath = "platform:/resource/tools.vitruv.compmodelcons.change/target/generated-sources/ecore"
+        genModel = "platform:/resource/tools.vitruv.neojoin.vitruv.change/src/main/ecore/view_id.genmodel"
+        srcPath = "platform:/resource/tools.vitruv.neojoin.vitruv.change/target/generated-sources/ecore"
         generateCustomClasses = false
     }
 

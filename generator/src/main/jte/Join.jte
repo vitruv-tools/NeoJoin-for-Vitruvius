@@ -1,7 +1,7 @@
-@import tools.vitruv.compmodelcons.generator.backend.description.JoinDescription
-@import tools.vitruv.compmodelcons.views.conditions.ConjunctiveCondition
-@import tools.vitruv.compmodelcons.views.conditions.FeatureCondition
-@import tools.vitruv.compmodelcons.views.operations.Join
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.JoinDescription
+@import tools.vitruv.neojoin.vitruv.views.conditions.ConjunctiveCondition
+@import tools.vitruv.neojoin.vitruv.views.conditions.FeatureCondition
+@import tools.vitruv.neojoin.vitruv.views.operations.Join
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param JoinDescription join

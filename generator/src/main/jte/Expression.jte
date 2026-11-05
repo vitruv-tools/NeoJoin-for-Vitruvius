@@ -1,5 +1,5 @@
 @import gg.jte.support.ForSupport
-@import tools.vitruv.compmodelcons.generator.backend.description.ExpressionDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.ExpressionDescription
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param ExpressionDescription expression

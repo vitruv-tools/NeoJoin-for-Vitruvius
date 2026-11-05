@@ -1,7 +1,7 @@
 @import gg.jte.support.ForSupport
 @import java.util.List
-@import tools.vitruv.compmodelcons.generator.backend.description.FeatureSourceDescription
-@import tools.vitruv.compmodelcons.views.operations.FeatureSource
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FeatureSourceDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.FeatureSource
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param FeatureSourceDescription featureSource

@@ -1,5 +1,5 @@
-@import tools.vitruv.compmodelcons.generator.backend.description.SourceDescription
-@import tools.vitruv.compmodelcons.views.operations.Source
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.SourceDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.Source
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param SourceDescription source

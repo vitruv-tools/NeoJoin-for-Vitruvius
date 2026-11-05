@@ -1,0 +1,29 @@
+version: 2
+updates:
+- package-ecosystem: "github-actions"
+  directory: "/"
+  schedule:
+    interval: daily
+  commit-message:
+    prefix: "GitHub Actions"
+    include: "scope"
+- package-ecosystem: "maven"
+  directory: "/"
+  schedule:
+    interval: daily
+  commit-message:
+    prefix: "Maven"
+    include: "scope"
+  groups:
+    ecore:
+      patterns:
+      - "org.eclipse.emf:org.eclipse.emf.ecore*"
+    xtext:
+      patterns:
+      - "org.eclipse.xtext:*"
+    jte:
+      patterns:
+      - "gg.jte:*"
+    vitruv:
+      patterns:
+      - "tools.vitruv:*"

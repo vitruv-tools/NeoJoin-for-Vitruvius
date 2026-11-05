@@ -1,5 +1,5 @@
 @import org.eclipse.emf.ecore.EObject
-@import tools.vitruv.compmodelcons.generator.backend.description.SourceObjectFactoryDeclarationDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.SourceObjectFactoryDeclarationDescription
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param SourceObjectFactoryDeclarationDescription sourceObjectFactoryDeclaration
