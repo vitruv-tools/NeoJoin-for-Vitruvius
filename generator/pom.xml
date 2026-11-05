@@ -11,72 +11,56 @@
 
   <artifactId>tools.vitruv.neojoin.vitruv.generator</artifactId>
 
-  <properties>
-    <maven.compiler.source>25</maven.compiler.source>
-    <maven.compiler.target>25</maven.compiler.target>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-    <jte.version>3.2.4</jte.version>
-  </properties>
-
   <dependencies>
     <dependency>
-      <groupId>tools.vitruv.neojoin.vitruv</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>tools.vitruv.neojoin.vitruv.views</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>tools.vitruv.neojoin.vitruv</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>tools.vitruv.neojoin.vitruv.change</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- Vitruvius dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.dsls.common</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
 
     <!-- NeoJoin dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.neojoin.model</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.neojoin.frontend.language</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.neojoin.emf.transformation</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Eclipse dependencies -->
     <dependency>
       <groupId>org.eclipse.emf</groupId>
       <artifactId>org.eclipse.emf.mwe2.runtime</artifactId>
-      <version>2.26.0</version>
     </dependency>
     <dependency>
       <groupId>org.eclipse.xtext</groupId>
       <artifactId>org.eclipse.xtext.xtext.generator</artifactId>
-      <version>2.43.0</version>
     </dependency>
 
     <!-- Code Generation dependencies -->
     <dependency>
       <groupId>gg.jte</groupId>
       <artifactId>jte</artifactId>
-      <version>${jte.version}</version>
     </dependency>
     <dependency>
       <groupId>gg.jte</groupId>
       <artifactId>jte-runtime</artifactId>
-      <version>${jte.version}</version>
     </dependency>
 
     <!-- JUnit dependencies -->
@@ -107,7 +91,7 @@
       <plugin>
         <groupId>gg.jte</groupId>
         <artifactId>jte-maven-plugin</artifactId>
-        <version>${jte.version}</version>
+        <version>3.2.5</version>
         <configuration>
           <sourceDirectory>${project.basedir}/src/main/jte</sourceDirectory>
           <targetDirectory>${project.build.directory}/generated-sources/jte</targetDirectory>

@@ -16,27 +16,22 @@
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.composite</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.atomic</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.views</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.correspondence</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.utils</artifactId>
-      <version>${vitruv-change.version}</version>
     </dependency>
 
     <!-- Vitruvius test dependencies -->
@@ -79,7 +74,6 @@
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-text</artifactId>
-      <version>1.12.0</version>
     </dependency>
 
     <!-- external test dependencies -->
@@ -118,19 +112,16 @@
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.p2wrappers.emfcompare</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.p2wrappers.emfutils</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
 
     <!-- p2 test dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.p2wrappers.javautils</artifactId>
-      <version>${vitruv.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

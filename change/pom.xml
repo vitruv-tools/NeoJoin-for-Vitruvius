@@ -13,58 +13,49 @@
 
   <dependencies>
     <dependency>
-      <groupId>tools.vitruv.neojoin.vitruv</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>tools.vitruv.neojoin.vitruv.views</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
 
     <!-- NeoJoin dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.neojoin.frontend.language</artifactId>
-      <version>0.1.0-SNAPSHOT</version>
     </dependency>
 
     <!-- Vitruvius dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.composite</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.atomic</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.changederivation</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.views</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.vsum</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.correspondence</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.change.propagation</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.dsls.reactions.runtime</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
 
     <!-- Vitruvius test dependencies -->
@@ -141,19 +132,16 @@
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.p2wrappers.emfcompare</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.p2wrappers.emfutils</artifactId>
-      <version>${vitruv.version}</version>
     </dependency>
 
     <!-- p2 test dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.framework.p2wrappers.javautils</artifactId>
-      <version>${vitruv.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
