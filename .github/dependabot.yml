@@ -14,13 +14,16 @@ updates:
   commit-message:
     prefix: "Maven"
     include: "scope"
+  # Xtext has to stay at 2.44 until the Vitruvius version is raised (tools.vitruv.change.utils 4.0.1 needs
+  # xtend.lib.macro 2.44.0; NeoJoin pins 2.42.0). Trigger: raise the Vitruvius version, then revisit this rule
+  # together with the Eclipse platform pins that requireUpperBoundDeps reports.
+  ignore:
+  - dependency-name: "org.eclipse.xtext:*"
+  - dependency-name: "org.eclipse.xtend:*"
   groups:
     ecore:
       patterns:
       - "org.eclipse.emf:org.eclipse.emf.ecore*"
-    xtext:
-      patterns:
-      - "org.eclipse.xtext:*"
     jte:
       patterns:
       - "gg.jte:*"
