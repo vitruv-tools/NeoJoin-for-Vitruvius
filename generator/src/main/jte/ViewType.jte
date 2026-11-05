@@ -2,9 +2,9 @@
 @import java.util.List
 @import org.apache.commons.text.StringEscapeUtils
 @import org.eclipse.emf.ecore.EPackage
-@import tools.vitruv.compmodelcons.change.ChangeSpecificationAwareViewType
-@import tools.vitruv.compmodelcons.generator.backend.description.ViewTypeDescription
-@import tools.vitruv.compmodelcons.views.operations.Root
+@import tools.vitruv.neojoin.vitruv.change.ChangeSpecificationAwareViewType
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.ViewTypeDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.Root
 @import tools.vitruv.dsls.common.JavaImportHelper
 @import tools.vitruv.framework.views.ViewTypeProvider
 

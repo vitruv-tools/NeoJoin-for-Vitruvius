@@ -1,6 +1,6 @@
-@import tools.vitruv.compmodelcons.generator.backend.description.FeatureOriginDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.FeatureSourceDescription
-@import tools.vitruv.compmodelcons.generator.backend.description.FeatureTransformDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FeatureOriginDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FeatureSourceDescription
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FeatureTransformDescription
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param FeatureOriginDescription featureOrigin

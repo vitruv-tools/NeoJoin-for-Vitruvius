@@ -1,8 +1,8 @@
 @import org.eclipse.emf.ecore.EObject
 @import tools.vitruv.change.atomic.EChange
-@import tools.vitruv.compmodelcons.generator.backend.description.OnPutDeclarationDescription
-@import tools.vitruv.compmodelcons.views.PutContext
-@import tools.vitruv.compmodelcons.views.bindings.OriginBinding
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.OnPutDeclarationDescription
+@import tools.vitruv.neojoin.vitruv.views.PutContext
+@import tools.vitruv.neojoin.vitruv.views.bindings.OriginBinding
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param OnPutDeclarationDescription onPutDeclaration

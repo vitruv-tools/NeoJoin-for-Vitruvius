@@ -1,8 +1,8 @@
 @import gg.jte.support.ForSupport
 @import java.util.List
 @import java.util.Optional
-@import tools.vitruv.compmodelcons.generator.backend.description.RootDescription
-@import tools.vitruv.compmodelcons.views.operations.Root
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.RootDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.Root
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param RootDescription root

@@ -1,6 +1,6 @@
 @import java.util.Optional
-@import tools.vitruv.compmodelcons.generator.backend.description.FeatureProjectDescription
-@import tools.vitruv.compmodelcons.views.operations.FeatureProject
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FeatureProjectDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.FeatureProject
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param FeatureProjectDescription featureProject

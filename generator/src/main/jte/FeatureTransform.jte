@@ -1,5 +1,5 @@
-@import tools.vitruv.compmodelcons.generator.backend.description.FeatureTransformDescription
-@import tools.vitruv.compmodelcons.views.operations.FeatureTransform
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.FeatureTransformDescription
+@import tools.vitruv.neojoin.vitruv.views.operations.FeatureTransform
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param FeatureTransformDescription featureTransform

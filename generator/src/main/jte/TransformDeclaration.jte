@@ -1,14 +1,14 @@
 @import java.util.function.Function
 @import org.eclipse.emf.ecore.EObject
 @import tools.vitruv.change.atomic.EChange
-@import tools.vitruv.compmodelcons.generator.backend.description.TransformDeclarationDescription
-@import tools.vitruv.compmodelcons.views.GetContext
-@import tools.vitruv.compmodelcons.views.PutContext
-@import tools.vitruv.compmodelcons.views.bindings.FeatureOriginBinding
-@import tools.vitruv.compmodelcons.views.bindings.ObjectBinding
-@import tools.vitruv.compmodelcons.views.bindings.OriginBinding
-@import tools.vitruv.compmodelcons.views.bindings.ValueBinding
-@import tools.vitruv.compmodelcons.views.bindings.ValueUpdateBinding
+@import tools.vitruv.neojoin.vitruv.generator.backend.description.TransformDeclarationDescription
+@import tools.vitruv.neojoin.vitruv.views.GetContext
+@import tools.vitruv.neojoin.vitruv.views.PutContext
+@import tools.vitruv.neojoin.vitruv.views.bindings.FeatureOriginBinding
+@import tools.vitruv.neojoin.vitruv.views.bindings.ObjectBinding
+@import tools.vitruv.neojoin.vitruv.views.bindings.OriginBinding
+@import tools.vitruv.neojoin.vitruv.views.bindings.ValueBinding
+@import tools.vitruv.neojoin.vitruv.views.bindings.ValueUpdateBinding
 @import tools.vitruv.dsls.common.JavaImportHelper
 
 @param TransformDeclarationDescription transformDeclaration

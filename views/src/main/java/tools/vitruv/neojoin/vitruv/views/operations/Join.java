@@ -1,0 +1,170 @@
+package tools.vitruv.neojoin.vitruv.views.operations;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.eclipse.emf.ecore.EClass;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.EReference;
+import tools.vitruv.change.atomic.EChange;
+import tools.vitruv.change.atomic.eobject.CreateEObject;
+import tools.vitruv.change.atomic.eobject.DeleteEObject;
+import tools.vitruv.change.atomic.root.InsertRootEObject;
+import tools.vitruv.change.atomic.root.RemoveRootEObject;
+import tools.vitruv.neojoin.vitruv.views.DynamicModels;
+import tools.vitruv.neojoin.vitruv.views.GetContext;
+import tools.vitruv.neojoin.vitruv.views.PutContext;
+import tools.vitruv.neojoin.vitruv.views.bindings.OriginBinding;
+import tools.vitruv.neojoin.vitruv.views.conditions.Condition;
+
+/**
+ * An origin operation that joins another origin operation with elements of a specified target
+ * class.
+ */
+public class Join implements OriginOperation {
+  private final EClass sourceClass;
+  private final SourceObjectFactory sourceObjectFactory;
+  private final boolean isRoot;
+  private final EReference container;
+  private final OriginOperation origin;
+  private final Type type;
+  private final Condition condition;
+
+  public Join(EClass sourceClass, SourceObjectFactory sourceObjectFactory, OriginOperation origin,
+              Type type, Condition condition) {
+    this.sourceClass = sourceClass;
+    this.sourceObjectFactory =
+        SourceObjectFactory.requireNonNullElseDefault(sourceObjectFactory, sourceClass);
+    this.isRoot = DynamicModels.isRoot(sourceClass);
+    this.container = isRoot ? null : DynamicModels.getUnambiguousContainer(sourceClass);
+    this.origin = origin;
+    this.type = type;
+    this.condition = condition;
+  }
+
+  @Override
+  public List<OriginBinding> doGet(GetContext context) {
+    List<OriginBinding> originBindings = origin.doGet(context);
+    List<OriginBinding> result = new ArrayList<>();
+    List<EObject> candidates = context.getOriginObjects(sourceClass);
+
+    for (OriginBinding originBinding : originBindings) {
+      boolean atLeastOneValuePasses = false;
+      for (EObject candidate : candidates) {
+        OriginBinding joinedBinding = new JoinOriginBindingImpl(originBinding, candidate);
+        if (condition.evaluate(joinedBinding)) {
+          result.add(joinedBinding);
+          atLeastOneValuePasses = true;
+        }
+      }
+      if (type == Type.LEFT && !atLeastOneValuePasses) {
+        result.add(originBinding);
+      }
+    }
+
+    return result;
+  }
+
+  @Override
+  public OriginBinding doPut(EChange<EObject> viewChange, OriginBinding target,
+                             PutContext context) {
+    if (viewChange instanceof CreateEObject<EObject> createEObject) {
+      assert target
+          .originObjects()
+          .isEmpty();
+
+      OriginBinding originBinding = origin.doPut(viewChange, target, context);
+
+      // In the case of a self-join (from X join X) always creating is not actually correct.
+      // Instead, we would need to check whether the view object already has an origin object in
+      // the correspondences
+      // that would satisfy this join as well.
+
+      EObject created = sourceObjectFactory.createOriginObject(createEObject.getAffectedElement());
+      context
+          .getCorrespondences()
+          .joinCorrespondence(originBinding.originObjects(), List.of(created),
+                              createEObject.getAffectedElement());
+      Source.attachedCreatedOriginObject(created, sourceClass, isRoot, container, context);
+
+      return new JoinOriginBindingImpl(originBinding, created);
+    }
+
+    if (viewChange instanceof DeleteEObject<EObject> deleteEObject) {
+      JoinOriginBindingImpl binding = (JoinOriginBindingImpl) target;
+
+      EObject deleted = binding.originObject();
+      context
+          .getCorrespondences()
+          .unjoinCorrespondence(binding.originObjects(), List.of(deleted),
+                                deleteEObject.getAffectedElement());
+      Source.detachDeletedOriginObject(deleted, sourceClass, isRoot, container, context);
+
+      origin.doPut(viewChange, binding.originBinding(), context);
+
+      return OriginBinding.empty();
+    }
+
+    if (viewChange instanceof InsertRootEObject<EObject> insertRootEObject) {
+      JoinOriginBindingImpl binding = (JoinOriginBindingImpl) target;
+      EObject inserted = binding.originObject();
+
+      OriginBinding originBinding = origin.doPut(viewChange, binding.originBinding(), context);
+
+      if (isRoot) {
+        context.moveRootToOtherOriginModel(sourceClass.getEPackage(), inserted,
+                                           insertRootEObject
+                                               .getResource()
+                                               .getURI());
+      }
+
+      return new JoinOriginBindingImpl(originBinding, inserted);
+    }
+
+    if (viewChange instanceof RemoveRootEObject<EObject>) {
+      JoinOriginBindingImpl binding = (JoinOriginBindingImpl) target;
+      EObject removed = binding.originObject();
+
+      OriginBinding originBinding = origin.doPut(viewChange, binding.originBinding(), context);
+
+      if (isRoot) {
+        context.moveRootToDefaultOriginModel(sourceClass.getEPackage(), removed);
+      }
+
+      return new JoinOriginBindingImpl(originBinding, removed);
+    }
+
+    throw new IllegalArgumentException("Inappropriate change type: " + viewChange.getClass());
+  }
+
+  public enum Type {
+    INNER,
+    LEFT
+  }
+
+  private static final class JoinOriginBindingImpl implements OriginBinding {
+    private final OriginBinding originBinding;
+    private final EObject originObject;
+    private final List<EObject> originObjects = new ArrayList<>();
+
+    private JoinOriginBindingImpl(OriginBinding originBinding, EObject originObject) {
+      this.originBinding = originBinding;
+      this.originObject = originObject;
+
+      this.originObjects.addAll(originBinding.originObjects());
+      this.originObjects.add(originObject);
+    }
+
+    @Override
+    public List<EObject> originObjects() {
+      return originObjects;
+    }
+
+    public OriginBinding originBinding() {
+      return originBinding;
+    }
+
+    public EObject originObject() {
+      return originObject;
+    }
+  }
+}

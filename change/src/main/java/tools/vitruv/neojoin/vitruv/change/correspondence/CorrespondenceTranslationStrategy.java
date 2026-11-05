@@ -1,0 +1,15 @@
+package tools.vitruv.neojoin.vitruv.change.correspondence;
+
+import tools.vitruv.change.correspondence.Correspondence;
+import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
+import tools.vitruv.change.utils.ResourceAccess;
+import tools.vitruv.neojoin.vitruv.change.ViewChangePropagationContext;
+
+public interface CorrespondenceTranslationStrategy {
+  CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
+      ResourceAccess resourceAccess);
+
+  TranslatedCorrespondenceModelView createTranslatedCorrespondenceModelView(
+      EditableCorrespondenceModelView<Correspondence> correspondenceModel,
+      ViewChangePropagationContext context);
+}
