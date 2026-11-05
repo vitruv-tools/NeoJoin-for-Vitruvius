@@ -41,8 +41,8 @@
     <maven.compiler.source>21</maven.compiler.source>
     <maven.compiler.target>21</maven.compiler.target>
     <sonar.organization>vitruv-tools</sonar.organization>
-    <vitruv.version>4.0.1-compmodelcons-SNAPSHOT</vitruv.version>
-    <vitruv-change.version>4.0.1-compmodelcons-SNAPSHOT</vitruv-change.version>
+    <vitruv.version>4.0.1</vitruv.version>
+    <vitruv-change.version>4.0.1</vitruv-change.version>
     <neojoin.version>0.1.0-SNAPSHOT</neojoin.version>
   </properties>
 
@@ -165,7 +165,7 @@
         <version>${neojoin.version}</version>
       </dependency>
 
-      <!-- External dependencies -->
+      <!-- External dependencies. The Eclipse platform pins (core.*, equinox.*, osgi) follow the Vitruvius version: raise them with it, as reported by requireUpperBoundDeps. -->
       <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
@@ -192,6 +192,11 @@
         <version>3.2.5</version>
       </dependency>
       <dependency>
+        <groupId>net.java.dev.jna</groupId>
+        <artifactId>jna</artifactId>
+        <version>5.19.1</version>
+      </dependency>
+      <dependency>
         <groupId>org.antlr</groupId>
         <artifactId>antlr-runtime</artifactId>
         <version>3.2</version>
@@ -204,7 +209,7 @@
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-core</artifactId>
-        <version>2.26.0</version>
+        <version>2.26.1</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.emf</groupId>
@@ -224,18 +229,33 @@
       <dependency>
         <groupId>org.eclipse.emf</groupId>
         <artifactId>org.eclipse.emf.mwe2.runtime</artifactId>
-        <version>2.26.0</version>
+        <version>2.27.0</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.core.expressions</artifactId>
+        <version>3.9.700</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.core.filesystem</artifactId>
+        <version>1.11.500</version>
+      </dependency>
+      <dependency>
+        <groupId>org.eclipse.platform</groupId>
+        <artifactId>org.eclipse.core.resources</artifactId>
+        <version>3.24.100</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.core.runtime</artifactId>
-        <version>3.34.200</version>
+        <version>3.35.0</version>
       </dependency>
       <!-- required to mitigate Eclipse dependency signing problems -->
       <dependency>
         <groupId>org.eclipse.platform</groupId>
         <artifactId>org.eclipse.equinox.common</artifactId>
-        <version>3.20.300</version>
+        <version>3.21.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.platform</groupId>
@@ -247,40 +267,41 @@
         <artifactId>org.eclipse.osgi</artifactId>
         <version>3.24.300</version>
       </dependency>
+      <!-- Xtext 2.44 instead of NeoJoin's 2.42.0: tools.vitruv.change.utils 4.0.1 needs xtend.lib.macro 2.44.0. Raise together with the Vitruvius version. -->
       <dependency>
         <groupId>org.eclipse.xtend</groupId>
         <artifactId>org.eclipse.xtend.lib</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>org.eclipse.xtext</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>org.eclipse.xtext.common.types</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>org.eclipse.xtext.util</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>org.eclipse.xtext.xbase</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>org.eclipse.xtext.xbase.lib</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.eclipse.xtext</groupId>
         <artifactId>org.eclipse.xtext.xtext.generator</artifactId>
-        <version>2.42.0</version>
+        <version>2.44.0</version>
       </dependency>
       <dependency>
         <groupId>org.hamcrest</groupId>

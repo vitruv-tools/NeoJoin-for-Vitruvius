@@ -19,7 +19,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass restaurant = DynamicModels.createEClass(viewType, "Restaurant");
 
-    DynamicModels.createManyContainmentEReference(root, "allRestaurants", restaurant);
+    DynamicModels.createManyContainmentEReference(root, "restaurants", restaurant);
 
     ViewTypeSourceGenerator generator = createGenerator(viewType, "my_example", """
                                                                                 from Restaurant r
@@ -42,7 +42,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass restaurant = DynamicModels.createEClass(viewType, "Restaurant");
 
-    DynamicModels.createManyContainmentEReference(root, "allRestaurants", restaurant);
+    DynamicModels.createManyContainmentEReference(root, "restaurants", restaurant);
 
     ViewTypeSourceGenerator generator = createGenerator(viewType, "test", """
                                                                           from Restaurant r
@@ -64,7 +64,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                                          public interface Literals {
                                              EClass ROOT = null;
                                              EClass RESTAURANT = null;
-                                             EReference ROOT__ALL_RESTAURANTS = null;
+                                             EReference ROOT__RESTAURANTS = null;
                                          }
                                      }
                                      """));
@@ -109,7 +109,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass restaurant = DynamicModels.createEClass(viewType, "Restaurant");
 
-    DynamicModels.createManyContainmentEReference(root, "allRestaurants", restaurant);
+    DynamicModels.createManyContainmentEReference(root, "restaurants", restaurant);
     DynamicModels.createEAttribute(restaurant, "numEmployees", EcorePackage.eINSTANCE.getEInt());
 
     ViewTypeSourceGenerator generator = createGenerator(viewType, "test", """
@@ -134,7 +134,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                                          public interface Literals {
                                              EClass ROOT = null;
                                              EClass RESTAURANT = null;
-                                             EReference ROOT__ALL_RESTAURANTS = null;
+                                             EReference ROOT__RESTAURANTS = null;
                                              EReference RESTAURANT__NUM_EMPLOYEES = null;
                                          }
                                      }
@@ -149,7 +149,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass joined = DynamicModels.createEClass(viewType, "Joined");
 
-    DynamicModels.createManyContainmentEReference(root, "allJoineds", joined);
+    DynamicModels.createManyContainmentEReference(root, "joineds", joined);
     DynamicModels.createEAttribute(joined, "numEmployees", EcorePackage.eINSTANCE.getEInt());
     DynamicModels.createEAttribute(joined, "name", EcorePackage.eINSTANCE.getEString());
 
@@ -177,7 +177,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                                          public interface Literals {
                                              EClass ROOT = null;
                                              EClass JOINED = null;
-                                             EReference ROOT__ALL_JOINEDS = null;
+                                             EReference ROOT__JOINEDS = null;
                                              EReference JOINED__NUM_EMPLOYEES = null;
                                              EReference JOINED__NAME = null;
                                          }
@@ -193,7 +193,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass joined = DynamicModels.createEClass(viewType, "Joined");
 
-    DynamicModels.createManyContainmentEReference(root, "allJoineds", joined);
+    DynamicModels.createManyContainmentEReference(root, "joineds", joined);
     DynamicModels.createEAttribute(joined, "numEmployees", EcorePackage.eINSTANCE.getEInt());
     DynamicModels.createEAttribute(joined, "name", EcorePackage.eINSTANCE.getEString());
 
@@ -222,7 +222,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                                          public interface Literals {
                                              EClass ROOT = null;
                                              EClass JOINED = null;
-                                             EReference ROOT__ALL_JOINEDS = null;
+                                             EReference ROOT__JOINEDS = null;
                                              EReference JOINED__NUM_EMPLOYEES = null;
                                              EReference JOINED__NAME = null;
                                          }
@@ -251,7 +251,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass joined = DynamicModels.createEClass(viewType, "Joined");
 
-    DynamicModels.createManyContainmentEReference(root, "allJoineds", joined);
+    DynamicModels.createManyContainmentEReference(root, "joineds", joined);
     DynamicModels.createEAttribute(joined, "numEmployees", EcorePackage.eINSTANCE.getEInt());
     DynamicModels.createEAttribute(joined, "name", EcorePackage.eINSTANCE.getEString());
 
@@ -280,7 +280,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                                          public interface Literals {
                                              EClass ROOT = null;
                                              EClass JOINED = null;
-                                             EReference ROOT__ALL_JOINEDS = null;
+                                             EReference ROOT__JOINEDS = null;
                                              EReference JOINED__NUM_EMPLOYEES = null;
                                              EReference JOINED__NAME = null;
                                          }
@@ -296,7 +296,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
     EClass root = DynamicModels.createEClass(viewType, "Root");
     EClass joined = DynamicModels.createEClass(viewType, "Joined");
 
-    DynamicModels.createManyContainmentEReference(root, "allJoineds", joined);
+    DynamicModels.createManyContainmentEReference(root, "joineds", joined);
     DynamicModels.createEAttribute(joined, "numEmployees", EcorePackage.eINSTANCE.getEInt());
     DynamicModels.createEAttribute(joined, "name", EcorePackage.eINSTANCE.getEString());
 
@@ -326,7 +326,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                                          public interface Literals {
                                              EClass ROOT = null;
                                              EClass JOINED = null;
-                                             EReference ROOT__ALL_JOINEDS = null;
+                                             EReference ROOT__JOINEDS = null;
                                              EReference JOINED__NUM_EMPLOYEES = null;
                                              EReference JOINED__NAME = null;
                                          }

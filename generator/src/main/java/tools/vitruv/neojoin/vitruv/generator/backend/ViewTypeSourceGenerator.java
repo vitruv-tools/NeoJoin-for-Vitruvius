@@ -163,13 +163,13 @@ public class ViewTypeSourceGenerator {
 
   private OriginDescription createOriginDescription(
       GenClass targetClass, AQRSource source, Context context) {
-    if (source.condition() != null) {
-      return new FilterDescription(
-          createExpressionDescription(source.condition(), source.allFroms().toList(), context),
-          createOriginDescription(targetClass, source, source.joins().size() - 1, context));
-    } else {
-      return createOriginDescription(targetClass, source, source.joins().size() - 1, context);
+    OriginDescription origin =
+        createOriginDescription(targetClass, source, source.joins().size() - 1, context);
+    for (var condition : source.conditions()) {
+      origin = new FilterDescription(
+          createExpressionDescription(condition, source.allFroms().toList(), context), origin);
     }
+    return origin;
   }
 
   private OriginDescription createOriginDescription(

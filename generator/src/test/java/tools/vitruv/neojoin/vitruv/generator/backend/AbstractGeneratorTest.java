@@ -73,7 +73,7 @@ public class AbstractGeneratorTest {
                                                                                         "models"))
                                                                             .toURI())
                                                                     .toString());
-    EPackage.Registry registry = collector.collect();
+    EPackage.Registry registry = collector.collect().right();
 
     List<Metamodel> originMetamodels =
         registry
