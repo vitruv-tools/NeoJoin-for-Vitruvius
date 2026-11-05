@@ -1,12 +1,7 @@
 package tools.vitruv.neojoin.vitruv.generator;
 
 import com.google.inject.Inject;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+
 import org.eclipse.emf.codegen.ecore.genmodel.GenJDKLevel;
 import org.eclipse.emf.codegen.ecore.genmodel.GenModel;
 import org.eclipse.emf.codegen.ecore.genmodel.GenModelFactory;
@@ -24,6 +19,7 @@ import org.eclipse.xtext.xbase.compiler.IGeneratorConfigProvider;
 import org.eclipse.xtext.xbase.compiler.JvmModelGenerator;
 import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations;
 import org.eclipse.xtext.xbase.jvmmodel.ILogicalContainerProvider;
+
 import tools.vitruv.neojoin.Parser;
 import tools.vitruv.neojoin.aqr.AQR;
 import tools.vitruv.neojoin.aqr.AQRImport;
@@ -36,194 +32,167 @@ import tools.vitruv.neojoin.vitruv.generator.backend.ViewTypeSourceGenerator;
 import tools.vitruv.neojoin.vitruv.generator.tools.Metamodel;
 import tools.vitruv.neojoin.vitruv.generator.tools.NamingGenerator;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+
 public class NeoJoinVitruvGenerator implements IGenerator {
-  private final static String PACKAGE_EXTENSION = ".ecore";
-  private final static String GENMODEL_EXTENSION = ".genmodel";
+    private static final String PACKAGE_EXTENSION = ".ecore";
+    private static final String GENMODEL_EXTENSION = ".genmodel";
 
-  @Inject
-  private Parser parser;
+    @Inject private Parser parser;
 
-  @Inject
-  private ExpressionHelper expressionHelper;
+    @Inject private ExpressionHelper expressionHelper;
 
-  @Inject
-  private JvmModelGenerator jvmModelGenerator;
+    @Inject private JvmModelGenerator jvmModelGenerator;
 
-  @Inject
-  private IGeneratorConfigProvider generatorConfigProvider;
+    @Inject private IGeneratorConfigProvider generatorConfigProvider;
 
-  @Inject
-  private IJvmModelAssociations jvmModelAssociations;
+    @Inject private IJvmModelAssociations jvmModelAssociations;
 
-  @Inject
-  private ILogicalContainerProvider logicalContainerProvider;
+    @Inject private ILogicalContainerProvider logicalContainerProvider;
 
-  @Override
-  public void doGenerate(Resource input, IFileSystemAccess fsa) {
-    Parser.Result result = parser.parse(input);
+    @Override
+    public void doGenerate(Resource input, IFileSystemAccess fsa) {
+        Parser.Result result = parser.parse(input);
 
-    if (result instanceof Parser.Result.Success success) {
-      String name = input
-          .getURI()
-          .trimFileExtension()
-          .lastSegment();
-      AQR aqr = success.aqr();
+        if (result instanceof Parser.Result.Success success) {
+            String name = input.getURI().trimFileExtension().lastSegment();
+            AQR aqr = success.aqr();
 
-      ViewTypeDefinition
-          viewTypeDefinition =
-          (ViewTypeDefinition) input
-              .getContents()
-              .getFirst();
+            ViewTypeDefinition viewTypeDefinition =
+                    (ViewTypeDefinition) input.getContents().getFirst();
 
-      Metamodel viewTypeMetamodel;
-      try {
-        viewTypeMetamodel = generateMetamodel(input, name, aqr, fsa);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
+            Metamodel viewTypeMetamodel;
+            try {
+                viewTypeMetamodel = generateMetamodel(input, name, aqr, fsa);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-      List<Metamodel> originMetaModels = aqr
-          .imports()
-          .stream()
-          .map(AQRImport::pack)
-          .map(ePackage -> Metamodel.load(ePackage, input.getResourceSet()))
-          .toList();
+            List<Metamodel> originMetaModels =
+                    aqr.imports().stream()
+                            .map(AQRImport::pack)
+                            .map(ePackage -> Metamodel.load(ePackage, input.getResourceSet()))
+                            .toList();
 
-      ViewTypeExpressionSourceGenerator expressionSourceGenerator =
-          new ViewTypeExpressionSourceGenerator(expressionHelper,
-                                                viewTypeDefinition,
-                                                jvmModelGenerator,
-                                                generatorConfigProvider,
-                                                jvmModelAssociations,
-                                                logicalContainerProvider);
-      fsa.generateFile(expressionSourceGenerator.getFileName(),
-                       expressionSourceGenerator.generate());
+            ViewTypeExpressionSourceGenerator expressionSourceGenerator =
+                    new ViewTypeExpressionSourceGenerator(
+                            expressionHelper,
+                            viewTypeDefinition,
+                            jvmModelGenerator,
+                            generatorConfigProvider,
+                            jvmModelAssociations,
+                            logicalContainerProvider);
+            fsa.generateFile(
+                    expressionSourceGenerator.getFileName(), expressionSourceGenerator.generate());
 
-      ViewTypeSourceGenerator
-          sourceGenerator =
-          new ViewTypeSourceGenerator(name,
-                                      originMetaModels,
-                                      viewTypeMetamodel,
-                                      aqr,
-                                      expressionSourceGenerator);
-      fsa.generateFile(sourceGenerator.getFileName(), sourceGenerator.generate());
-    }
-  }
-
-  private Metamodel generateMetamodel(Resource input, String name, AQR aqr, IFileSystemAccess fsa)
-  throws
-  IOException {
-    ResourceSet resourceSet = input.getResourceSet();
-    String baseFileName = String.format("ecore/%s/%s", aqr
-        .export()
-        .name(), name);
-
-    MetaModelGenerator metaModelGenerator = new MetaModelGenerator(aqr);
-    ModelInfo metaModelInfo = metaModelGenerator.generate();
-    EPackage metaModel = metaModelInfo.pack();
-    fsa.generateFile(baseFileName + PACKAGE_EXTENSION,
-                     getContentsForFile(resourceSet, name, PACKAGE_EXTENSION, metaModel));
-
-    GenModel genModel = createGenModel(input, name, aqr, metaModel);
-    fsa.generateFile(baseFileName + GENMODEL_EXTENSION,
-                     getContentsForFile(resourceSet, name, GENMODEL_EXTENSION, genModel));
-
-    return new Metamodel(metaModel, genModel
-        .getGenPackages()
-        .getFirst());
-  }
-
-  private GenModel createGenModel(Resource input, String name, AQR aqr, EPackage ePackage) {
-    String modelName = NamingGenerator.convertToPascalCase(aqr
-                                                               .export()
-                                                               .name());
-    String modelPackage = NamingGenerator.PACKAGE_BASE;
-
-    GenModel genModel = GenModelFactory.eINSTANCE.createGenModel();
-
-    genModel.setModelName(modelName);
-    genModel
-        .getForeignModel()
-        .add(name + PACKAGE_EXTENSION);
-
-    genModel.setImporterID("org.eclipse.emf.importer.ecore");
-    genModel.setComplianceLevel(GenJDKLevel.JDK170_LITERAL);
-    genModel.setCopyrightFields(false);
-    genModel.setOperationReflection(true);
-    genModel.setImportOrganizing(true);
-
-    genModel.setModelPluginID(modelPackage);
-    genModel.setModelDirectory(String.format("/%s/target/generated-sources/ecore",
-                                             getProjectPackage(input)));
-
-    genModel.initialize(List.of(ePackage));
-    GenPackage genPackage = genModel
-        .getGenPackages()
-        .getFirst();
-
-    genPackage.setPrefix(modelName);
-    genPackage.setBasePackage(modelPackage);
-    genPackage.setDisposableProviderFactory(true);
-
-    return genModel;
-  }
-
-  private String getProjectPackage(Resource input) {
-    URI uri = input.getURI();
-
-    if (uri.isPlatformResource()) {
-      return uri.segment(1);
+            ViewTypeSourceGenerator sourceGenerator =
+                    new ViewTypeSourceGenerator(
+                            name,
+                            originMetaModels,
+                            viewTypeMetamodel,
+                            aqr,
+                            expressionSourceGenerator);
+            fsa.generateFile(sourceGenerator.getFileName(), sourceGenerator.generate());
+        }
     }
 
-    if (uri.isFile()) {
-      Path inputPath = Path
-          .of(uri.toFileString())
-          .toAbsolutePath()
-          .normalize();
+    private Metamodel generateMetamodel(Resource input, String name, AQR aqr, IFileSystemAccess fsa)
+            throws IOException {
+        ResourceSet resourceSet = input.getResourceSet();
+        String baseFileName = String.format("ecore/%s/%s", aqr.export().name(), name);
 
-      return EcorePlugin
-          .getPlatformResourceMap()
-          .entrySet()
-          .stream()
-          .filter(entry -> entry
-              .getValue()
-              .isFile())
-          .filter(entry -> {
-            Path
-                projectPath =
-                Path
-                    .of(entry
-                            .getValue()
-                            .toFileString())
-                    .toAbsolutePath()
-                    .normalize();
-            return inputPath.startsWith(projectPath);
-          })
-          .max(Comparator.comparingInt(entry -> Path
-              .of(entry
-                      .getValue()
-                      .toFileString())
-              .getNameCount()))
-          .map(Map.Entry::getKey)
-          .orElseThrow();
+        MetaModelGenerator metaModelGenerator = new MetaModelGenerator(aqr);
+        ModelInfo metaModelInfo = metaModelGenerator.generate();
+        EPackage metaModel = metaModelInfo.pack();
+        fsa.generateFile(
+                baseFileName + PACKAGE_EXTENSION,
+                getContentsForFile(resourceSet, name, PACKAGE_EXTENSION, metaModel));
+
+        GenModel genModel = createGenModel(input, name, aqr, metaModel);
+        fsa.generateFile(
+                baseFileName + GENMODEL_EXTENSION,
+                getContentsForFile(resourceSet, name, GENMODEL_EXTENSION, genModel));
+
+        return new Metamodel(metaModel, genModel.getGenPackages().getFirst());
     }
 
-    throw new IllegalArgumentException("Could not determine project package for " + input);
-  }
+    private GenModel createGenModel(Resource input, String name, AQR aqr, EPackage ePackage) {
+        String modelName = NamingGenerator.convertToPascalCase(aqr.export().name());
+        String modelPackage = NamingGenerator.PACKAGE_BASE;
 
-  private CharSequence getContentsForFile(ResourceSet resourceSet, String name, String extension,
-                                          EObject eObject) throws
-                                                           IOException {
-    URI uri = URI.createURI(name + extension);
+        GenModel genModel = GenModelFactory.eINSTANCE.createGenModel();
 
-    Resource genModelResource = resourceSet.createResource(uri);
-    genModelResource
-        .getContents()
-        .add(eObject);
+        genModel.setModelName(modelName);
+        genModel.getForeignModel().add(name + PACKAGE_EXTENSION);
 
-    ByteArrayOutputStream output = new ByteArrayOutputStream();
-    genModelResource.save(output, Map.of(XMLResource.OPTION_ENCODING, "UTF-8"));
+        genModel.setImporterID("org.eclipse.emf.importer.ecore");
+        genModel.setComplianceLevel(GenJDKLevel.JDK170_LITERAL);
+        genModel.setCopyrightFields(false);
+        genModel.setOperationReflection(true);
+        genModel.setImportOrganizing(true);
 
-    return output.toString();
-  }
+        genModel.setModelPluginID(modelPackage);
+        genModel.setModelDirectory(
+                String.format("/%s/target/generated-sources/ecore", getProjectPackage(input)));
+
+        genModel.initialize(List.of(ePackage));
+        GenPackage genPackage = genModel.getGenPackages().getFirst();
+
+        genPackage.setPrefix(modelName);
+        genPackage.setBasePackage(modelPackage);
+        genPackage.setDisposableProviderFactory(true);
+
+        return genModel;
+    }
+
+    private String getProjectPackage(Resource input) {
+        URI uri = input.getURI();
+
+        if (uri.isPlatformResource()) {
+            return uri.segment(1);
+        }
+
+        if (uri.isFile()) {
+            Path inputPath = Path.of(uri.toFileString()).toAbsolutePath().normalize();
+
+            return EcorePlugin.getPlatformResourceMap().entrySet().stream()
+                    .filter(entry -> entry.getValue().isFile())
+                    .filter(
+                            entry -> {
+                                Path projectPath =
+                                        Path.of(entry.getValue().toFileString())
+                                                .toAbsolutePath()
+                                                .normalize();
+                                return inputPath.startsWith(projectPath);
+                            })
+                    .max(
+                            Comparator.comparingInt(
+                                    entry ->
+                                            Path.of(entry.getValue().toFileString())
+                                                    .getNameCount()))
+                    .map(Map.Entry::getKey)
+                    .orElseThrow();
+        }
+
+        throw new IllegalArgumentException("Could not determine project package for " + input);
+    }
+
+    private CharSequence getContentsForFile(
+            ResourceSet resourceSet, String name, String extension, EObject eObject)
+            throws IOException {
+        URI uri = URI.createURI(name + extension);
+
+        Resource genModelResource = resourceSet.createResource(uri);
+        genModelResource.getContents().add(eObject);
+
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        genModelResource.save(output, Map.of(XMLResource.OPTION_ENCODING, "UTF-8"));
+
+        return output.toString();
+    }
 }

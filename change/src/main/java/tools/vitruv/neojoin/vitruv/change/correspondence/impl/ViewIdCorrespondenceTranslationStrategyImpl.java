@@ -2,16 +2,12 @@ package tools.vitruv.neojoin.vitruv.change.correspondence.impl;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EObject;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.resource.Resource;
+
 import tools.vitruv.change.atomic.hid.HierarchicalId;
 import tools.vitruv.change.atomic.hid.internal.HierarchicalIdResolver;
 import tools.vitruv.change.correspondence.Correspondence;
@@ -27,197 +23,183 @@ import tools.vitruv.neojoin.vitruv.change.viewid.model.ViewIdModel;
 import tools.vitruv.neojoin.vitruv.change.viewid.model.ViewIdModelFactory;
 import tools.vitruv.neojoin.vitruv.views.internal.ViewResourceAccess;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 public class ViewIdCorrespondenceTranslationStrategyImpl
-    implements CorrespondenceTranslationStrategy {
+        implements CorrespondenceTranslationStrategy {
 
-  @Override
-  public CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
-      ResourceAccess resourceAccess) {
-    return new RemoteCorrespondenceObjectViewObjectTranslatorFactoryImpl(resourceAccess);
-  }
-
-  @Override
-  public TranslatedCorrespondenceModelViewImpl createTranslatedCorrespondenceModelView(
-      EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-      ViewChangePropagationContext context) {
-    return new TranslatedCorrespondenceModelViewImpl(
-        new TranslatingEditableCorrespondenceModelViewImpl<>(correspondenceModel,
-                                                             context
-                                                                 .sourceView()
-                                                                 .getCorrespondenceResolver(),
-                                                             context
-                                                                 .targetView()
-                                                                 .getCorrespondenceResolver()));
-  }
-
-  private record RemoteCorrespondenceObjectViewObjectTranslatorFactoryImpl(
-      ResourceAccess actualResourceAccess)
-      implements CorrespondenceObjectViewObjectTranslatorFactory {
-
-    private ViewIdModel loadViewIdModel(ViewType<?> viewType, ResourceAccess actualResourceAccess) {
-      Resource resource =
-          actualResourceAccess.getModelResource(getIdModelURI(viewType, actualResourceAccess));
-
-      if (resource
-          .getContents()
-          .isEmpty()) {
-        resource
-            .getContents()
-            .add(ViewIdModelFactory.eINSTANCE.createViewIdModel());
-      }
-
-      return (ViewIdModel) resource
-          .getContents()
-          .getFirst();
-    }
-
-    private URI getIdModelURI(ViewType<?> viewType, ResourceAccess actualResourceAccess) {
-      return actualResourceAccess.getMetadataModelURI("views", String.format("%s.viewid",
-                                                                             viewType.getName()));
+    @Override
+    public CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
+            ResourceAccess resourceAccess) {
+        return new RemoteCorrespondenceObjectViewObjectTranslatorFactoryImpl(resourceAccess);
     }
 
     @Override
-    public CorrespondenceObjectViewObjectTranslator createCorrespondenceResolver(
-        ViewType<?> viewType,
-        ViewResourceAccess viewResourceAccess) {
-      return new RemoteCorrespondenceObjectViewObjectTranslatorImpl(
-          loadViewIdModel(viewType, actualResourceAccess),
-          viewType.getMetamodel(),
-          HierarchicalIdResolver.create(
-              viewResourceAccess.getResourceSet()));
-    }
-  }
-
-  private static class RemoteCorrespondenceObjectViewObjectTranslatorImpl
-      implements CorrespondenceObjectViewObjectTranslator {
-    private final ViewIdModel viewIdModel;
-    private final EPackage metamodel;
-    private final HierarchicalIdResolver hierarchicalIdResolver;
-
-    private final BiMap<EObject, ViewId> viewObjectToViewId = HashBiMap.create();
-    private final Map<HierarchicalId, ViewId> unresolvedHierarchicalIds = new HashMap<>();
-
-    private RemoteCorrespondenceObjectViewObjectTranslatorImpl(ViewIdModel viewIdModel,
-                                                               EPackage metamodel,
-                                                               HierarchicalIdResolver hierarchicalIdResolver) {
-      this.viewIdModel = viewIdModel;
-      this.metamodel = metamodel;
-      this.hierarchicalIdResolver = hierarchicalIdResolver;
-
-      initializeMap();
+    public TranslatedCorrespondenceModelViewImpl createTranslatedCorrespondenceModelView(
+            EditableCorrespondenceModelView<Correspondence> correspondenceModel,
+            ViewChangePropagationContext context) {
+        return new TranslatedCorrespondenceModelViewImpl(
+                new TranslatingEditableCorrespondenceModelViewImpl<>(
+                        correspondenceModel,
+                        context.sourceView().getCorrespondenceResolver(),
+                        context.targetView().getCorrespondenceResolver()));
     }
 
-    private void initializeMap() {
-      Set<HierarchicalId> hierarchicalIds = new HashSet<>();
+    private record RemoteCorrespondenceObjectViewObjectTranslatorFactoryImpl(
+            ResourceAccess actualResourceAccess)
+            implements CorrespondenceObjectViewObjectTranslatorFactory {
 
-      for (ViewId viewId : viewIdModel.getIds()) {
-        HierarchicalId hierarchicalId = new HierarchicalId(viewId.getHierarchicalId());
-        if (!hierarchicalIds.add(hierarchicalId)) {
-          throw new IllegalStateException(
-              "Duplicate hierarchical ID found in view ID model: " + hierarchicalId);
+        private ViewIdModel loadViewIdModel(
+                ViewType<?> viewType, ResourceAccess actualResourceAccess) {
+            Resource resource =
+                    actualResourceAccess.getModelResource(
+                            getIdModelURI(viewType, actualResourceAccess));
+
+            if (resource.getContents().isEmpty()) {
+                resource.getContents().add(ViewIdModelFactory.eINSTANCE.createViewIdModel());
+            }
+
+            return (ViewIdModel) resource.getContents().getFirst();
         }
-        try {
-          EObject viewObject = hierarchicalIdResolver.getEObject(hierarchicalId);
-          viewObjectToViewId.put(viewObject, viewId);
-        } catch (IllegalStateException e) {
-          unresolvedHierarchicalIds.put(hierarchicalId, viewId);
+
+        private URI getIdModelURI(ViewType<?> viewType, ResourceAccess actualResourceAccess) {
+            return actualResourceAccess.getMetadataModelURI(
+                    "views", String.format("%s.viewid", viewType.getName()));
         }
-      }
-    }
 
-    private void resolveUnresolvedViewIds() {
-      Iterator<Map.Entry<HierarchicalId, ViewId>> iterator = unresolvedHierarchicalIds
-          .entrySet()
-          .iterator();
-      while (iterator.hasNext()) {
-        Map.Entry<HierarchicalId, ViewId> entry = iterator.next();
-        HierarchicalId hierarchicalId = entry.getKey();
-        ViewId viewId = entry.getValue();
-        try {
-          EObject viewObject = hierarchicalIdResolver.getEObject(hierarchicalId);
-          viewObjectToViewId.put(viewObject, viewId);
-          iterator.remove();
-        } catch (IllegalStateException e) {
-          // The view ID remains unresolved.
+        @Override
+        public CorrespondenceObjectViewObjectTranslator createCorrespondenceResolver(
+                ViewType<?> viewType, ViewResourceAccess viewResourceAccess) {
+            return new RemoteCorrespondenceObjectViewObjectTranslatorImpl(
+                    loadViewIdModel(viewType, actualResourceAccess),
+                    viewType.getMetamodel(),
+                    HierarchicalIdResolver.create(viewResourceAccess.getResourceSet()));
         }
-      }
     }
 
-    private void ensureNoUnresolvedViewIds() {
-      if (!unresolvedHierarchicalIds.isEmpty()) {
-        throw new IllegalStateException(
-            "The following view IDs could not be resolved: " + unresolvedHierarchicalIds.keySet());
-      }
-    }
+    private static class RemoteCorrespondenceObjectViewObjectTranslatorImpl
+            implements CorrespondenceObjectViewObjectTranslator {
+        private final ViewIdModel viewIdModel;
+        private final EPackage metamodel;
+        private final HierarchicalIdResolver hierarchicalIdResolver;
 
-    @Override
-    public boolean canTranslateViewEObject(EObject viewObject) {
-      return viewObject
-          .eClass()
-          .getEPackage()
-          .equals(metamodel);
-    }
+        private final BiMap<EObject, ViewId> viewObjectToViewId = HashBiMap.create();
+        private final Map<HierarchicalId, ViewId> unresolvedHierarchicalIds = new HashMap<>();
 
-    @Override
-    public boolean canTranslateCorrespondenceEObject(EObject correspondenceObject) {
-      return correspondenceObject
-          .eClass()
-          .getEPackage()
-          .equals(ViewIdModelFactory.eINSTANCE.getViewIdModelPackage())
-          && correspondenceObject instanceof ViewId viewId && viewObjectToViewId
-          .inverse()
-          .containsKey(viewId);
-    }
+        private RemoteCorrespondenceObjectViewObjectTranslatorImpl(
+                ViewIdModel viewIdModel,
+                EPackage metamodel,
+                HierarchicalIdResolver hierarchicalIdResolver) {
+            this.viewIdModel = viewIdModel;
+            this.metamodel = metamodel;
+            this.hierarchicalIdResolver = hierarchicalIdResolver;
 
-    @Override
-    public EObject translateViewEObject(EObject correspondenceEObject) {
-      return viewObjectToViewId
-          .inverse()
-          .get((ViewId) correspondenceEObject);
-    }
-
-    @Override
-    public EObject translateCorrespondenceEObject(EObject viewEObject, boolean createIfNotExist) {
-      ViewId existingViewId = viewObjectToViewId.get(viewEObject);
-      if (existingViewId != null || !createIfNotExist) {
-        return existingViewId;
-      }
-      ViewId newViewId = ViewIdModelFactory.eINSTANCE.createViewId();
-      viewObjectToViewId.put(viewEObject, newViewId);
-      viewIdModel
-          .getIds()
-          .add(newViewId);
-      return newViewId;
-    }
-
-    @Override
-    public void onViewFitted() {
-      resolveUnresolvedViewIds();
-    }
-
-    @Override
-    public void onResolverUse() {
-      ensureNoUnresolvedViewIds();
-    }
-
-    @Override
-    public void close() {
-      for (ViewId viewId : List.copyOf(viewIdModel.getIds())) {
-        EObject viewObject = viewObjectToViewId
-            .inverse()
-            .get(viewId);
-        if (viewObject.eResource() == null || viewObject
-            .eResource()
-            .getResourceSet() == null) {
-          viewIdModel
-              .getIds()
-              .remove(viewId);
-        } else {
-          viewId.setHierarchicalId(hierarchicalIdResolver
-                                       .getAndUpdateId(viewObject)
-                                       .getId());
+            initializeMap();
         }
-      }
+
+        private void initializeMap() {
+            Set<HierarchicalId> hierarchicalIds = new HashSet<>();
+
+            for (ViewId viewId : viewIdModel.getIds()) {
+                HierarchicalId hierarchicalId = new HierarchicalId(viewId.getHierarchicalId());
+                if (!hierarchicalIds.add(hierarchicalId)) {
+                    throw new IllegalStateException(
+                            "Duplicate hierarchical ID found in view ID model: " + hierarchicalId);
+                }
+                try {
+                    EObject viewObject = hierarchicalIdResolver.getEObject(hierarchicalId);
+                    viewObjectToViewId.put(viewObject, viewId);
+                } catch (IllegalStateException e) {
+                    unresolvedHierarchicalIds.put(hierarchicalId, viewId);
+                }
+            }
+        }
+
+        private void resolveUnresolvedViewIds() {
+            Iterator<Map.Entry<HierarchicalId, ViewId>> iterator =
+                    unresolvedHierarchicalIds.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<HierarchicalId, ViewId> entry = iterator.next();
+                HierarchicalId hierarchicalId = entry.getKey();
+                ViewId viewId = entry.getValue();
+                try {
+                    EObject viewObject = hierarchicalIdResolver.getEObject(hierarchicalId);
+                    viewObjectToViewId.put(viewObject, viewId);
+                    iterator.remove();
+                } catch (IllegalStateException e) {
+                    // The view ID remains unresolved.
+                }
+            }
+        }
+
+        private void ensureNoUnresolvedViewIds() {
+            if (!unresolvedHierarchicalIds.isEmpty()) {
+                throw new IllegalStateException(
+                        "The following view IDs could not be resolved: "
+                                + unresolvedHierarchicalIds.keySet());
+            }
+        }
+
+        @Override
+        public boolean canTranslateViewEObject(EObject viewObject) {
+            return viewObject.eClass().getEPackage().equals(metamodel);
+        }
+
+        @Override
+        public boolean canTranslateCorrespondenceEObject(EObject correspondenceObject) {
+            return correspondenceObject
+                            .eClass()
+                            .getEPackage()
+                            .equals(ViewIdModelFactory.eINSTANCE.getViewIdModelPackage())
+                    && correspondenceObject instanceof ViewId viewId
+                    && viewObjectToViewId.inverse().containsKey(viewId);
+        }
+
+        @Override
+        public EObject translateViewEObject(EObject correspondenceEObject) {
+            return viewObjectToViewId.inverse().get((ViewId) correspondenceEObject);
+        }
+
+        @Override
+        public EObject translateCorrespondenceEObject(
+                EObject viewEObject, boolean createIfNotExist) {
+            ViewId existingViewId = viewObjectToViewId.get(viewEObject);
+            if (existingViewId != null || !createIfNotExist) {
+                return existingViewId;
+            }
+            ViewId newViewId = ViewIdModelFactory.eINSTANCE.createViewId();
+            viewObjectToViewId.put(viewEObject, newViewId);
+            viewIdModel.getIds().add(newViewId);
+            return newViewId;
+        }
+
+        @Override
+        public void onViewFitted() {
+            resolveUnresolvedViewIds();
+        }
+
+        @Override
+        public void onResolverUse() {
+            ensureNoUnresolvedViewIds();
+        }
+
+        @Override
+        public void close() {
+            for (ViewId viewId : List.copyOf(viewIdModel.getIds())) {
+                EObject viewObject = viewObjectToViewId.inverse().get(viewId);
+                if (viewObject.eResource() == null
+                        || viewObject.eResource().getResourceSet() == null) {
+                    viewIdModel.getIds().remove(viewId);
+                } else {
+                    viewId.setHierarchicalId(
+                            hierarchicalIdResolver.getAndUpdateId(viewObject).getId());
+                }
+            }
+        }
     }
-  }
 }

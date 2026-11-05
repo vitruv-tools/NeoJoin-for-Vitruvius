@@ -6,10 +6,10 @@ import tools.vitruv.change.utils.ResourceAccess;
 import tools.vitruv.neojoin.vitruv.change.ViewChangePropagationContext;
 
 public interface CorrespondenceTranslationStrategy {
-  CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
-      ResourceAccess resourceAccess);
+    CorrespondenceObjectViewObjectTranslatorFactory createCorrespondenceResolverFactory(
+            ResourceAccess resourceAccess);
 
-  TranslatedCorrespondenceModelView createTranslatedCorrespondenceModelView(
-      EditableCorrespondenceModelView<Correspondence> correspondenceModel,
-      ViewChangePropagationContext context);
+    TranslatedCorrespondenceModelView createTranslatedCorrespondenceModelView(
+            EditableCorrespondenceModelView<Correspondence> correspondenceModel,
+            ViewChangePropagationContext context);
 }

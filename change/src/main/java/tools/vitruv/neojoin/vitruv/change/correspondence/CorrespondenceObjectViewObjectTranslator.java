@@ -3,20 +3,20 @@ package tools.vitruv.neojoin.vitruv.change.correspondence;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * Translates between correspondence objects and view objects.
- * Correspondence objects are the objects that are stored in the correspondence model.
- * View objects cannot be stored in the correspondence model because views are temporary.
+ * Translates between correspondence objects and view objects. Correspondence objects are the
+ * objects that are stored in the correspondence model. View objects cannot be stored in the
+ * correspondence model because views are temporary.
  */
 public interface CorrespondenceObjectViewObjectTranslator extends AutoCloseable {
-  boolean canTranslateViewEObject(EObject viewObject);
+    boolean canTranslateViewEObject(EObject viewObject);
 
-  boolean canTranslateCorrespondenceEObject(EObject correspondenceObject);
+    boolean canTranslateCorrespondenceEObject(EObject correspondenceObject);
 
-  EObject translateViewEObject(EObject correspondenceEObject);
+    EObject translateViewEObject(EObject correspondenceEObject);
 
-  EObject translateCorrespondenceEObject(EObject viewEObject, boolean createIfNotExist);
+    EObject translateCorrespondenceEObject(EObject viewEObject, boolean createIfNotExist);
 
-  void onViewFitted();
+    void onViewFitted();
 
-  void onResolverUse();
+    void onResolverUse();
 }
