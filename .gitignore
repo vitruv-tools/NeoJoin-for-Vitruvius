@@ -12,3 +12,10 @@ dependency-reduced-pom.xml
 META-INF
 build.properties
 plugin.properties
+
+# JetBrains
+.idea
+
+# Local tooling
+CLAUDE*.md
+codebook.toml
