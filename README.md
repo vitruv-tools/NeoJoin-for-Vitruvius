@@ -1,5 +1,8 @@
 # Overview
 
+[![GitHub Action CI](https://github.com/vitruv-tools/NeoJoin-for-Vitruvius/actions/workflows/ci.yml/badge.svg)](https://github.com/vitruv-tools/NeoJoin-for-Vitruvius/actions/workflows/ci.yml)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vitruv-tools_NeoJoin-for-Vitruvius&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vitruv-tools_NeoJoin-for-Vitruvius)
+
 This repository contains an implementation to create Vitruvius view types using the NeoJoin language.
 The implementation can be integrated into a Maven-based build to generate Java code defining view types for each NeoJoin file.
 These generated view types can be used the same way as standard Vitruvius view types.
@@ -38,3 +41,28 @@ This means it creates a Java class model for each type in the source metamodel.
 
 The `NeoJoinVitruvBuildSetup` in the `generator` module is such a setup.
 It overrides all three extension points described above.
+
+# Build
+
+Requirements: JDK 21+.
+
+```sh
+./mvnw verify
+```
+
+The build resolves the NeoJoin artifacts it depends on from the Maven Central snapshot repository, which the NeoJoin repository updates with every nightly build.
+This repository does not publish artifacts yet; GitHub Actions only builds and tests it on Linux, macOS and Windows.
+We use [SonarQube](https://sonarcloud.io/project/overview?id=vitruv-tools_NeoJoin-for-Vitruvius) to analyze our Maven projects.
+
+### Code Style
+
+The code style is checked with [Checkstyle](https://checkstyle.org/) (`checkstyle.xml`). The check is optional and part of the Maven profile `checkstyle`, which prints violations as warnings and does not fail the build:
+
+```sh
+# only the style check (fast)
+./mvnw checkstyle:check@validate -P checkstyle
+# or: as part of the whole build
+./mvnw verify -P checkstyle
+```
+
+Add `-Dcheckstyle.severity=error` to print the violations as errors and fail the build at the first module with violations. The CI job `Checkstyle` checks all modules and fails while there are violations.
