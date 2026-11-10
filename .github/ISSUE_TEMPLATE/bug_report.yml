@@ -1,0 +1,40 @@
+name: Bug report
+description: Something does not work as expected
+type: Bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please reduce the problem to a minimal example (the smallest query and meta-models that still show it) instead of attaching your whole project.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened
+      description: Describe the problem and what you expected instead.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: How to reproduce
+      description: 'The query, the Maven configuration (xtext-maven-plugin setup) and the generated or failing code.'
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: 'Nightly build date, release or commit, plus the Vitruvius and NeoJoin versions'
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: 'Java and Maven version, operating system'
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: 'Paste the relevant lines, for example a stack trace or error message. Build or test output is the usual source.'
+      render: text
