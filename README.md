@@ -2,6 +2,8 @@
 
 [![GitHub Action CI](https://github.com/vitruv-tools/NeoJoin-for-Vitruvius/actions/workflows/ci.yml/badge.svg)](https://github.com/vitruv-tools/NeoJoin-for-Vitruvius/actions/workflows/ci.yml)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=vitruv-tools_NeoJoin-for-Vitruvius&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=vitruv-tools_NeoJoin-for-Vitruvius)
+[![Issues](https://img.shields.io/github/issues/vitruv-tools/NeoJoin-for-Vitruvius.svg)](https://github.com/vitruv-tools/NeoJoin-for-Vitruvius/issues)
+[![License](https://img.shields.io/github/license/vitruv-tools/NeoJoin-for-Vitruvius.svg)](https://raw.githubusercontent.com/vitruv-tools/NeoJoin-for-Vitruvius/main/LICENSE)
 
 This repository contains an implementation to create Vitruvius view types using the NeoJoin language.
 The implementation can be integrated into a Maven-based build to generate Java code defining view types for each NeoJoin file.
