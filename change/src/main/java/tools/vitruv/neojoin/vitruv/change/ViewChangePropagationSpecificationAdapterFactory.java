@@ -68,23 +68,6 @@ public class ViewChangePropagationSpecificationAdapterFactory {
                                 targetMetamodel));
     }
 
-    private MetamodelDescriptor cleanUpMetamodelDescriptor(
-            MetamodelDescriptor metamodelDescriptor) {
-        return MetamodelDescriptor.with(
-                metamodelDescriptor.getNsUris().stream()
-                        .filter(nsUri -> !ignoredNsUris.contains(nsUri))
-                        .collect(Collectors.toSet()));
-    }
-
-    private CorrespondenceTranslationStrategy getCorrespondenceTranslationStrategy(
-            CorrespondenceTranslation translation) {
-        return switch (translation) {
-            case VIEW_ID -> new ViewIdCorrespondenceTranslationStrategyImpl();
-            case ORIGIN_ELEMENTS -> new OriginElementCorrespondenceTranslationStrategyImpl();
-            case NONE -> new PassthroughCorrespondenceTranslationStrategyImpl();
-        };
-    }
-
     public ChangePropagationSpecification create(
             Optional<ChangePropagatingViewTypeSpecification> sourceViewType,
             ChangePropagationSpecification specification,
@@ -103,5 +86,22 @@ public class ViewChangePropagationSpecificationAdapterFactory {
                 specification,
                 targetViewType,
                 getCorrespondenceTranslationStrategy(translation));
+    }
+
+    private MetamodelDescriptor cleanUpMetamodelDescriptor(
+            MetamodelDescriptor metamodelDescriptor) {
+        return MetamodelDescriptor.with(
+                metamodelDescriptor.getNsUris().stream()
+                        .filter(nsUri -> !ignoredNsUris.contains(nsUri))
+                        .collect(Collectors.toSet()));
+    }
+
+    private CorrespondenceTranslationStrategy getCorrespondenceTranslationStrategy(
+            CorrespondenceTranslation translation) {
+        return switch (translation) {
+            case VIEW_ID -> new ViewIdCorrespondenceTranslationStrategyImpl();
+            case ORIGIN_ELEMENTS -> new OriginElementCorrespondenceTranslationStrategyImpl();
+            case NONE -> new PassthroughCorrespondenceTranslationStrategyImpl();
+        };
     }
 }

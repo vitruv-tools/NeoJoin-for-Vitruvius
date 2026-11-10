@@ -244,6 +244,7 @@ public class SourceTest extends AbstractOperationTest {
     @Test
     public void testPufOfRootCreationShouldInsertNonRootElementIntoOriginContainer() {
         // Origin Setup
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         EObject store = models.getRoot(Model.RESTAURANT);
         EClass restaurantClass =
                 DynamicModels.getEClass(models.getPackage(Model.RESTAURANT), "Restaurant");
@@ -281,6 +282,7 @@ public class SourceTest extends AbstractOperationTest {
     @Test
     public void testPufOfNonRootCreationShouldInsertNonRootElementIntoOriginContainer() {
         // Origin Setup
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         EObject store = models.getRoot(Model.RESTAURANT);
         EClass restaurantClass =
                 DynamicModels.getEClass(models.getPackage(Model.RESTAURANT), "Restaurant");
@@ -324,6 +326,7 @@ public class SourceTest extends AbstractOperationTest {
     @Test
     public void testPutOfRootDeletionShouldRemoveNonRootElementFromOriginContainer() {
         // Origin Setup
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         EObject store = models.getRoot(Model.RESTAURANT);
         EClass restaurantClass =
                 DynamicModels.getEClass(models.getPackage(Model.RESTAURANT), "Restaurant");
@@ -360,6 +363,7 @@ public class SourceTest extends AbstractOperationTest {
     @Test
     public void testPutOfNonRootDeletionShouldRemoveNonRootElementFromOriginContainer() {
         // Origin Setup
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         EObject store = models.getRoot(Model.RESTAURANT);
         EClass restaurantClass =
                 DynamicModels.getEClass(models.getPackage(Model.RESTAURANT), "Restaurant");

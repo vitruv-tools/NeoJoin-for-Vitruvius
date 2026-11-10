@@ -36,6 +36,7 @@ public class IntegratedOperationsTest extends AbstractOperationTest {
         EObject store = models.getRoot(Model.RESTAURANT);
         EClass restaurantClass =
                 DynamicModels.getEClass(models.getPackage(Model.RESTAURANT), "Restaurant");
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +2 lines
         List<EObject> restaurants = context.getOriginObjects(restaurantClass);
         List<EObject> storeContents = List.copyOf(store.eContents());
 
@@ -164,6 +165,7 @@ public class IntegratedOperationsTest extends AbstractOperationTest {
         EClass reviewClass = DynamicModels.getEClass(models.getPackage(Model.REVIEWPAGE), "Review");
         List<EObject> restaurants = context.getOriginObjects(restaurantClass);
         List<EObject> foods = context.getOriginObjects(foodClass);
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         List<EObject> reviews = context.getOriginObjects(reviewClass);
 
         // ViewType Setup

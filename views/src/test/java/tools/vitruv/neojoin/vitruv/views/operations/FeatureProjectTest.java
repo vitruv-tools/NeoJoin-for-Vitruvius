@@ -295,6 +295,7 @@ class FeatureProjectTest extends AbstractOperationTest {
         when(originOperation.doGet(simpleBinding, context))
                 .thenReturn(
                         FeatureBinding.ofOriginObject(store, new ValueBinding.Many(restaurants)));
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         FeatureBinding result = operation.doGet(simpleBinding, context);
 
         // Pre-Action Change

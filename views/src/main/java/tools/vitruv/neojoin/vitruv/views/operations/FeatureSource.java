@@ -49,6 +49,7 @@ public class FeatureSource implements FeatureOriginOperation {
             ObjectBinding subjectBinding,
             ValueUpdateBinding value,
             PutContext context) {
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         EObject subject = subjectBinding.originObjects().get(target.index());
         Optional<Target.Access> access = target.access(subjectBinding);
 
