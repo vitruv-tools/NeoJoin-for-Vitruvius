@@ -1,0 +1,9 @@
+# Commits that git blame should skip: changes of the formatting only (no change of public methods).
+# One commit per entry. GitHub applies this file automatically.
+# Locally: git config blame.ignoreRevsFile .git-blame-ignore-revs
+
+# Run autoformat (2026-08-16)
+99abd8accdeb48dff545aff402704b2f04c96818
+
+# Fix the Checkstyle violations (#15)
+29e38ccde2041cafd03c60fdec5256d025edf28b
