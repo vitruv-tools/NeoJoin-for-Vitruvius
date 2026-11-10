@@ -354,6 +354,18 @@
       </plugins>
     </pluginManagement>
     <plugins>
+      <!-- stable module name for projects that use the jars on the module path -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifestEntries>
+              <Automatic-Module-Name>${project.artifactId}</Automatic-Module-Name>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
       <!-- fail if a dependency is resolved to a lower version than one of the versions requested in the dependency tree -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
