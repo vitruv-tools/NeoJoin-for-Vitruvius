@@ -21,12 +21,12 @@ import org.eclipse.xtext.xbase.jvmmodel.IJvmModelAssociations;
 import org.eclipse.xtext.xbase.jvmmodel.ILogicalContainerProvider;
 
 import tools.vitruv.neojoin.Parser;
-import tools.vitruv.neojoin.aqr.AQR;
-import tools.vitruv.neojoin.aqr.AQRImport;
 import tools.vitruv.neojoin.ast.ViewTypeDefinition;
 import tools.vitruv.neojoin.generation.MetaModelGenerator;
 import tools.vitruv.neojoin.generation.ModelInfo;
 import tools.vitruv.neojoin.jvmmodel.ExpressionHelper;
+import tools.vitruv.neojoin.model.AQR;
+import tools.vitruv.neojoin.model.AQRImport;
 import tools.vitruv.neojoin.vitruv.generator.backend.ViewTypeExpressionSourceGenerator;
 import tools.vitruv.neojoin.vitruv.generator.backend.ViewTypeSourceGenerator;
 import tools.vitruv.neojoin.vitruv.generator.tools.Metamodel;
