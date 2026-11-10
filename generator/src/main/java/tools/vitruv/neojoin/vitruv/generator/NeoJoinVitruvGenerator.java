@@ -123,7 +123,6 @@ public class NeoJoinVitruvGenerator implements IGenerator {
 
     private GenModel createGenModel(Resource input, String name, AQR aqr, EPackage ePackage) {
         String modelName = NamingGenerator.convertToPascalCase(aqr.export().name());
-        String modelPackage = NamingGenerator.PACKAGE_BASE;
 
         GenModel genModel = GenModelFactory.eINSTANCE.createGenModel();
 
@@ -135,6 +134,8 @@ public class NeoJoinVitruvGenerator implements IGenerator {
         genModel.setCopyrightFields(false);
         genModel.setOperationReflection(true);
         genModel.setImportOrganizing(true);
+
+        String modelPackage = NamingGenerator.PACKAGE_BASE;
 
         genModel.setModelPluginID(modelPackage);
         genModel.setModelDirectory(

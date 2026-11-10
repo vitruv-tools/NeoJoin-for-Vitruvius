@@ -115,6 +115,7 @@ class FeatureSourceTest extends AbstractOperationTest {
         EReference restaurantsReference =
                 DynamicModels.getEReference(store.eClass(), "restaurants");
         EClass restaurantClass = restaurantsReference.getEReferenceType();
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         List<EObject> restaurants = List.copyOf(DynamicModels.getList(store, restaurantsReference));
 
         // ViewType Setup

@@ -62,6 +62,7 @@ public class RootTest extends AbstractOperationTest {
         // Action
         when(rootProject.beginGetByCreatingViewObjects(context)).thenReturn(List.of(root));
         when(emptyProject.beginGetByCreatingViewObjects(context)).thenReturn(empties);
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         List<ObjectBinding> results = operation.doGet(context).getRootBindings();
 
         // Assertions

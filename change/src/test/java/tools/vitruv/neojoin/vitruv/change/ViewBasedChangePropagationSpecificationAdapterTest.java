@@ -126,6 +126,7 @@ class ViewBasedChangePropagationSpecificationAdapterTest {
     @Test
     @SuppressWarnings("unchecked")
     void testPropagateChanges() throws IOException {
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         ViewBasedChangePropagationSpecificationAdapter adapter =
                 getViewChangePropagationSpecificationAdapter();
 
@@ -135,10 +136,12 @@ class ViewBasedChangePropagationSpecificationAdapterTest {
 
         ResourceSet resourceSet = new ResourceSetImpl();
         setupOrigin(resourceSet, projectPath, "source.xmi", sourceOriginInfo, "oldName");
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         EObject targetRoot =
                 setupOrigin(
                         resourceSet, projectPath, "target.xmi", targetOriginInfo, "targetOldName");
 
+        // CHECKSTYLE.SUPPRESS: VariableDeclarationUsageDistance for +1 lines
         ResourceAccess changedOrigin = new TestResourceAccess(resourceSet, tempDirectory);
         TestEditableCorrespondenceModelView<Correspondence> correspondenceModelView =
                 mock(

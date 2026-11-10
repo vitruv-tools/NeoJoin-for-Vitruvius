@@ -246,6 +246,8 @@ class OperationBasedViewTypeTest {
                         viewRootClass, "allInterfaces", viewInterfaceClass);
         EReference viewComponent2InterfaceReference =
                 DynamicModels.createEReference(viewComponentClass, "interface", viewInterfaceClass);
+        EReference providedInterfaceReference =
+                Pcm_mockupPackage.eINSTANCE.getComponent_ProvidedInterface();
 
         class TestViewType extends OperationBasedViewType {
             public TestViewType() {
@@ -278,9 +280,7 @@ class OperationBasedViewTypeTest {
                                                                 new FeatureSource(
                                                                         FeatureSource.Target
                                                                                 .ofFirst(
-                                                                                        (Pcm_mockupPackage
-                                                                                                .eINSTANCE
-                                                                                                .getComponent_ProvidedInterface()))))),
+                                                                                        providedInterfaceReference)))),
                                                 Project.OnPut.NO_OP)),
                                 new Root.Target(
                                         viewInterfaceContainment,
