@@ -8,6 +8,7 @@ on:
   # The NeoJoin artifacts are snapshots from Maven Central, which change independently of this repository.
   # Same time as the nightly build of NeoJoin, which deploys these snapshots. GitHub delays scheduled runs, so the order of the
   # two builds is not guaranteed: a build may use the snapshot of the previous night.
+  # The nightly build also deploys the snapshots of this repository (job deploy-snapshot).
   schedule:
   - cron: "0 2 * * *"
 
@@ -142,3 +143,42 @@ jobs:
         --update-snapshots
         --no-transfer-progress
         -Dsonar.projectKey=vitruv-tools_NeoJoin-for-Vitruvius
+
+  deploy-snapshot:
+    name: Deploy snapshot
+    if: >
+      (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+      && github.ref == 'refs/heads/main'
+      && github.repository_owner == 'vitruv-tools'
+    runs-on: ubuntu-latest
+    needs: [build-maven, build-maven-other-platforms]
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v7.0.1
+
+    - name: Setup Java and Maven cache
+      uses: actions/setup-java@v6.1.0
+      with:
+        distribution: 'temurin'
+        java-version: '21'
+        check-latest: true
+        cache: 'maven'
+        server-id: central
+        server-username: CENTRAL_USERNAME
+        server-password: CENTRAL_PASSWORD
+        gpg-private-key: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+        gpg-passphrase: MAVEN_GPG_PASSPHRASE
+
+    # Tests already ran in build-maven. The repository and the GPG signing come from the parent POM tools.vitruv:parent.
+    - name: Deploy snapshot
+      run: >
+        ./mvnw clean deploy -P snapshot
+        -DskipTests
+        --batch-mode
+        --update-snapshots
+        --no-transfer-progress
+      env:
+        CENTRAL_USERNAME: ${{ secrets.CENTRAL_USERNAME }}
+        CENTRAL_PASSWORD: ${{ secrets.CENTRAL_PASSWORD }}
+        MAVEN_GPG_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
