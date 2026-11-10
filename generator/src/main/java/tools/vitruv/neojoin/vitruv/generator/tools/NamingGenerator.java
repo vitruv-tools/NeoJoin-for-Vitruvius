@@ -2,7 +2,7 @@ package tools.vitruv.neojoin.vitruv.generator.tools;
 
 import org.apache.commons.text.CaseUtils;
 
-import tools.vitruv.neojoin.aqr.AQR;
+import tools.vitruv.neojoin.model.AQR;
 
 public class NamingGenerator {
     public static final String PACKAGE_BASE = "neojoin.viewtypes";

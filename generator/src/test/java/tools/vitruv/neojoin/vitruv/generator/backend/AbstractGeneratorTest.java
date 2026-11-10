@@ -15,8 +15,8 @@ import org.eclipse.xtext.xbase.XMemberFeatureCall;
 
 import tools.vitruv.neojoin.NeoJoinStandaloneSetup;
 import tools.vitruv.neojoin.Parser;
-import tools.vitruv.neojoin.aqr.AQR;
 import tools.vitruv.neojoin.collector.PackageModelCollector;
+import tools.vitruv.neojoin.model.AQR;
 import tools.vitruv.neojoin.vitruv.generator.tools.Metamodel;
 import tools.vitruv.neojoin.vitruv.generator.tools.NamingGenerator;
 import tools.vitruv.neojoin.vitruv.views.DynamicModels;
