@@ -69,3 +69,5 @@ The code style is checked with [Checkstyle](https://checkstyle.org/) (`checkstyl
 ```
 
 Add `-Dcheckstyle.severity=error` to print the violations as errors and fail the build at the first module with violations. The CI job `Checkstyle` checks all modules and fails while there are violations.
+
+Commits that only change the formatting of the code are listed in `.git-blame-ignore-revs`, so that `git blame` skips them. GitHub applies the file automatically; locally, run `git config blame.ignoreRevsFile .git-blame-ignore-revs` once.
