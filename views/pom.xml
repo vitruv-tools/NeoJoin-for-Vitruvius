@@ -10,6 +10,8 @@
   </parent>
 
   <artifactId>tools.vitruv.neojoin.vitruv.views</artifactId>
+  <name>Views</name>
+  <description>Composable operations (source, root, project, filter, join, ...) that define a Vitruvius view type.</description>
 
   <dependencies>
     <!-- Vitruvius dependencies -->

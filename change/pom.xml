@@ -10,6 +10,8 @@
   </parent>
 
   <artifactId>tools.vitruv.neojoin.vitruv.change</artifactId>
+  <name>Change Propagation</name>
+  <description>Change propagation between views of NeoJoin view types and the model for the IDs of view elements.</description>
 
   <dependencies>
     <dependency>

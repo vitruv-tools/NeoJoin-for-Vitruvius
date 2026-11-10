@@ -10,6 +10,8 @@
   </parent>
 
   <artifactId>tools.vitruv.neojoin.vitruv.generator</artifactId>
+  <name>Generator</name>
+  <description>Xtext build setup and code generators that create a Vitruvius view type for each NeoJoin query.</description>
 
   <dependencies>
     <dependency>

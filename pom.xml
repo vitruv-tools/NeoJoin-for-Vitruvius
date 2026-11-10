@@ -17,7 +17,7 @@
   <packaging>pom</packaging>
 
   <name>NeoJoin for Vitruvius</name>
-  <description />
+  <description>Integration of the NeoJoin query language into Vitruvius: generates view types for NeoJoin queries and supports their use in change propagation specifications.</description>
   <url>https://github.com/vitruv-tools/NeoJoin-for-Vitruvius</url>
 
   <!-- Organizational Information -->
