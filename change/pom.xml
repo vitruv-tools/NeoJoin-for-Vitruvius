@@ -4,12 +4,14 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>tools.vitruv.neojoin.vitruv</groupId>
+    <groupId>tools.vitruv</groupId>
     <artifactId>tools.vitruv.neojoin.vitruv</artifactId>
     <version>0.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>tools.vitruv.neojoin.vitruv.change</artifactId>
+  <name>Change Propagation</name>
+  <description>Change propagation between views of NeoJoin view types and the model for the IDs of view elements.</description>
 
   <dependencies>
     <dependency>

@@ -54,8 +54,9 @@ Requirements: JDK 21+.
 ```
 
 The build resolves the NeoJoin artifacts it depends on from the Maven Central snapshot repository, which the NeoJoin repository updates with every nightly build.
-This repository does not publish artifacts yet; GitHub Actions only builds and tests it on Linux, macOS and Windows.
+The nightly build deploys the snapshots of this repository (group `tools.vitruv`, artifact IDs `tools.vitruv.neojoin.vitruv.*`, version `0.1.0-SNAPSHOT`) to the same repository, `https://central.sonatype.com/repository/maven-snapshots/`; there are no releases yet. GitHub Actions also builds and tests it on Linux, macOS and Windows.
 We use [SonarQube](https://sonarcloud.io/project/overview?id=vitruv-tools_NeoJoin-for-Vitruvius) to analyze our Maven projects.
+The snapshot deployment and the metadata in the jars are described in [Snapshots and Jar Metadata](docs/snapshots-and-jar-metadata.md).
 
 ### Code Style
 
