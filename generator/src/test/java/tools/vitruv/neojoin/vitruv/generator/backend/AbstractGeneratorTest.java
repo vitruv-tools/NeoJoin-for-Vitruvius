@@ -32,6 +32,7 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.tools.DiagnosticCollector;
 import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
 import javax.tools.SimpleJavaFileObject;
@@ -184,8 +185,10 @@ public class AbstractGeneratorTest {
             files.addAll(createReviewPageStubs());
             files.addAll(List.of(stubs));
 
-            boolean ok = compiler.getTask(null, fileManager, null, options, null, files).call();
-            assertTrue(ok);
+            DiagnosticCollector<JavaFileObject> diagnostics = new DiagnosticCollector<>();
+            boolean ok =
+                    compiler.getTask(null, fileManager, diagnostics, options, null, files).call();
+            assertTrue(ok, diagnostics.getDiagnostics()::toString);
         }
     }
 

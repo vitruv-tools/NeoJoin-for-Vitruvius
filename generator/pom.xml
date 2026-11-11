@@ -65,6 +65,13 @@
       <artifactId>jte-runtime</artifactId>
     </dependency>
 
+    <!-- Vitruvius test dependencies -->
+    <dependency>
+      <groupId>tools.vitruv</groupId>
+      <artifactId>tools.vitruv.change.testutils.metamodels</artifactId>
+      <scope>test</scope>
+    </dependency>
+
     <!-- JUnit dependencies -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
