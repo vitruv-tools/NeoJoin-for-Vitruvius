@@ -445,10 +445,59 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                         package neojoin.viewtypes.mymodel;
 
                         class ExpressionStubClass {
-                            static boolean method(
-                                models.restaurant.Restaurant it,
-                                models.restaurant.Restaurant restaurant
-                            ) {
+                            static boolean method(models.restaurant.Restaurant restaurant) {
+                                return true;
+                            }
+                        }
+                        """));
+    }
+
+    @Test
+    public void testGeneratorShouldGenerateCodeThatCompiles9()
+            throws URISyntaxException, IOException {
+        EPackage viewType = createEPackage();
+
+        EClass root = DynamicModels.createEClass(viewType, "Root");
+        DynamicModels.createEAttribute(root, "value", EcorePackage.eINSTANCE.getEInt());
+
+        ViewTypeSourceGenerator generator =
+                createGenerator(
+                        viewType,
+                        "test",
+                        """
+                        from Restaurant
+                        create root Root {
+                            value := it.numEmployees
+                        }
+                        """);
+
+        compile(
+                generator,
+                new JavaSourceFromString(
+                        "neojoin/viewtypes/mymodel/MymodelPackage.java",
+                        """
+                        package neojoin.viewtypes.mymodel;
+
+                        import org.eclipse.emf.ecore.EPackage;
+                        import org.eclipse.emf.ecore.EClass;
+                        import org.eclipse.emf.ecore.EReference;
+
+                        public interface MymodelPackage extends EPackage {
+                            MymodelPackage eINSTANCE = null;
+
+                            public interface Literals {
+                                EClass ROOT = null;
+                                EReference ROOT__VALUE = null;
+                            }
+                        }
+                        """),
+                new JavaSourceFromString(
+                        "neojoin/viewtypes/mymodel/ExpressionStubClass.java",
+                        """
+                        package neojoin.viewtypes.mymodel;
+
+                        class ExpressionStubClass {
+                            static boolean method(models.restaurant.Restaurant it) {
                                 return true;
                             }
                         }

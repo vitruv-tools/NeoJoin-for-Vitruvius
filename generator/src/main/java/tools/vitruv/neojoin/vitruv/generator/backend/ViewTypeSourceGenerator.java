@@ -322,17 +322,8 @@ public class ViewTypeSourceGenerator {
 
     private ExpressionDescription createExpressionDescription(
             XExpression expression, List<AQRFrom> parameters, Context context) {
-        boolean indexAlwaysZero = false;
-        if (parameters.size() == 1 && parameters.getFirst().alias() != null) {
-            // NeoJoin adds 'it' as the first parameter if there is only one parameter, even if
-            // there
-            // is an alias.
-            // The alias then becomes a second parameter.
-            parameters = new ArrayList<>(parameters);
-            parameters.addFirst(parameters.getFirst());
-            indexAlwaysZero = true;
-        }
-
+        // NeoJoin adds the implicit parameter 'it' only if the single source has no alias, so the
+        // parameters of the expression method are exactly the sources.
         List<ExpressionDescription.Parameter> arguments = new ArrayList<>();
         for (int index = 0; index < parameters.size(); index++) {
             AQRFrom parameter = parameters.get(index);
@@ -340,9 +331,7 @@ public class ViewTypeSourceGenerator {
                     getOriginMetamodel(parameter.clazz().getEPackage())
                             .getGenClass(parameter.clazz());
 
-            arguments.add(
-                    new ExpressionDescription.Parameter(
-                            parameterClass, indexAlwaysZero ? 0 : index));
+            arguments.add(new ExpressionDescription.Parameter(parameterClass, index));
         }
 
         return new ExpressionDescription(expressions.getQualifiedMethodName(expression), arguments);
