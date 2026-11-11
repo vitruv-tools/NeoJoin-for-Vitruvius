@@ -14,10 +14,10 @@ import org.eclipse.text.edits.TextEdit;
 import org.eclipse.xtext.common.types.JvmFormalParameter;
 import org.eclipse.xtext.xbase.XAbstractFeatureCall;
 import org.eclipse.xtext.xbase.XExpression;
+import org.eclipse.xtext.xbase.scoping.batch.IFeatureNames;
 
 import tools.vitruv.dsls.common.JavaFileGenerator;
 import tools.vitruv.dsls.common.JavaImportHelper;
-import tools.vitruv.neojoin.Constants;
 import tools.vitruv.neojoin.model.AQR;
 import tools.vitruv.neojoin.model.AQRFeature;
 import tools.vitruv.neojoin.model.AQRFrom;
@@ -360,7 +360,7 @@ public class ViewTypeSourceGenerator {
                             || (parameters.size() == 1
                                     && formalParameter
                                             .getName()
-                                            .equals(Constants.ExpressionSelfReference))) {
+                                            .equals(IFeatureNames.IT.getFirstSegment()))) {
                         return new FeatureSource.Target(index, features.reversed());
                     }
                 }

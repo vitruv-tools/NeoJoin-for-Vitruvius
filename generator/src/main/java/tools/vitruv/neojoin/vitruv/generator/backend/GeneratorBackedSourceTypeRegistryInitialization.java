@@ -11,10 +11,10 @@ import org.eclipse.xtext.common.types.JvmType;
 import org.eclipse.xtext.xbase.jvmmodel.JvmTypeReferenceBuilder;
 import org.jspecify.annotations.NonNull;
 
+import tools.vitruv.neojoin.common.EMFUtils;
 import tools.vitruv.neojoin.jvmmodel.SourceModelInferrer;
 import tools.vitruv.neojoin.jvmmodel.SourceTypeRegistryInitialization;
 import tools.vitruv.neojoin.jvmmodel.TypeRegistry;
-import tools.vitruv.neojoin.utils.EMFUtils;
 import tools.vitruv.neojoin.vitruv.generator.tools.Metamodel;
 
 import java.util.LinkedHashSet;

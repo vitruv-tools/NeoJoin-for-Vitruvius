@@ -34,6 +34,10 @@
     <!-- NeoJoin dependencies -->
     <dependency>
       <groupId>tools.vitruv</groupId>
+      <artifactId>tools.vitruv.neojoin.common</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tools.vitruv</groupId>
       <artifactId>tools.vitruv.neojoin.model</artifactId>
     </dependency>
     <dependency>
