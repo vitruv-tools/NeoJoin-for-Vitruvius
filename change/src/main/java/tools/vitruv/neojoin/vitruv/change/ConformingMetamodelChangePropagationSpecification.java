@@ -29,7 +29,7 @@ import tools.vitruv.change.correspondence.Correspondence;
 import tools.vitruv.change.correspondence.view.EditableCorrespondenceModelView;
 import tools.vitruv.change.propagation.impl.AbstractChangePropagationSpecification;
 import tools.vitruv.change.utils.ResourceAccess;
-import tools.vitruv.neojoin.utils.Pair;
+import tools.vitruv.neojoin.common.Pair;
 import tools.vitruv.neojoin.vitruv.views.DynamicModels;
 
 import java.util.ArrayList;
