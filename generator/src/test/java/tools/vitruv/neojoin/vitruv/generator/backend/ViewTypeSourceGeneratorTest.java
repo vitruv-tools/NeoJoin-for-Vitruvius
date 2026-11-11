@@ -445,10 +445,7 @@ class ViewTypeSourceGeneratorTest extends AbstractGeneratorTest {
                         package neojoin.viewtypes.mymodel;
 
                         class ExpressionStubClass {
-                            static boolean method(
-                                models.restaurant.Restaurant it,
-                                models.restaurant.Restaurant restaurant
-                            ) {
+                            static boolean method(models.restaurant.Restaurant restaurant) {
                                 return true;
                             }
                         }
